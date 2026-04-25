@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>脊兽跑酷</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Ma Shan Zheng", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+      background: url(images/游戏1.png) no-repeat center center / cover;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    /* 游戏介绍页 */
+    .intro {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+
+    .intro-box {
+      background: rgba(255,250,240,0.95);
+      border-radius: 24px;
+      border: 4px solid #ffd1dc;
+      padding: 30px 40px;
+      max-width: 600px;
+      box-shadow: 0 8px 24px rgba(255,182,193,0.3);
+      text-align: left;
+    }
+
+    .intro-box h2 {
+      text-align: center;
+      color: #ff6b35;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .intro-box p {
+      color: #444;
+      font-size: 17px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .intro-box strong {
+      color: #ff6b35;
+    }
+
+	 /* 按钮容器：专门用来居中 */
+	    .btn-center{
+	      width: 100%;
+	      display: flex;
+	      justify-content: center;
+	      margin-top: 24px;
+	    }
+
+    .intro-btn {
+      margin-top: 24px;
+      padding: 14px 36px;
+      font-size: 22px;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .intro-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(255,154,158,0.4);
+    }
+
+    /* 游戏主容器 */
+    .game {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: none;
+      background: #87ceeb;
+    }
+
+    .bg-sky {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6000px;
+      height: 70%;
+      background: url(images/蓝天.png) repeat-x;
+      background-size: auto 100%;
+      animation: scroll 50s linear infinite;
+      z-index: 1;
+    }
+
+    .bg-roof {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 6000px;
+      height: 30%;
+      background: url(images/屋檐.png) repeat-x;
+      background-size: auto 100%;
+      animation: scroll 25s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-2000px); }
+    }
+
+    .top-ui {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+    }
+
+    .hp-bar {
+      width: 60vw;
+      height: 32px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 3px solid #ffd1dc;
+    }
+
+    .hp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b, #ffd93d);
+      transition: width 0.3s ease;
+    }
+
+    .timer {
+      color: #ff6b35;
+      font-size: 26px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.7);
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .player {
+      width: 220px;
+      height: 220px;
+      position: absolute;
+      bottom: 120px;
+      left: 120px;
+      background: url(images/脊兽.png) no-repeat center/contain;
+      z-index: 15;
+    }
+
+    .obstacle,.coin {
+      position: absolute;
+      bottom: 120px;
+      z-index: 12;
+    }
+
+    .obstacle {
+      width: 170px;
+      height: 170px;
+      background: url(images/石头.png) no-repeat center/contain;
+    }
+
+    .coin {
+      width: 150px;
+      height: 150px;
+      background: url(images/元宝.png) no-repeat center/contain;
+    }
+
+    /* 答题弹窗 */
+    .quiz {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(255,250,240,0.95);
+      padding: 32px;
+      border-radius: 24px;
+      display: none;
+      z-index: 50;
+      min-width: 360px;
+      max-width: 520px;
+      border: 4px solid #ff3e5b;
+    }
+
+    .quiz h3 {
+      margin-bottom: 20px;
+      color: #ff6b35;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .quiz button {
+      padding: 12px 16px;
+      width: 100%;
+      margin: 8px 0;
+      background: linear-gradient(135deg, #ed5f61 0%, #feb078 100%);
+      color: #ffea72;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .quiz .skip {
+      background: #aaf3c7;
+      color: #888;
+      margin-top: 12px;
+    }
+
+    /* 结算弹窗 */
+    .modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(255,250,240,0.95);
+      padding: 36px;
+      border-radius: 24px;
+      display: none;
+      z-index: 60;
+      border: 4px solid #ff3e5b;
+      text-align: center;
+    }
+
+    .modal h2 {
+      color: #ff6b35;
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .modal p {
+      color: #666;
+      font-size: 18px;
+    }
+
+    .modal button {
+      padding: 12px 28px;
+      margin: 8px 6px;
+      font-size: 18px;
+      background: linear-gradient(135deg, #ff6769 0%, #fe8e90 100%);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+	
+  </style>
+</head>
+
+<body>
+<!-- 全局静音按钮 -->
+	<button id="soundBtn" style="
+	  position: fixed;
+	  top: 25px;
+	  right: 150px;
+	  z-index: 9999;
+	  background: rgba(255,255,255,0.8);
+	  border: 2px solid #ff5d83;
+	  border-radius: 50%;
+	  width: 44px;
+	  height: 44px;
+	  font-size: 20px;
+	  cursor: pointer;
+	">🔊</button>
+<!-- ===================== 音频标签 ===================== -->
+<audio id="bgmIntro" loop>
+  <source src="audio/背景1.mp3" type="audio/mpeg">
+</audio>
+<audio id="bgmGame" loop>
+  <source src="audio/背景1.mp3" type="audio/mpeg">
+</audio>
+<audio id="clickSound">
+  <source src="audio/点击.mp3" type="audio/mpeg">
+</audio>
+<audio id="winSound">
+  <source src="audio/成功1.mp3" type="audio/mpeg">
+</audio>
+<audio id="loseSound">
+  <source src="audio/失败1.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 游戏介绍页（打开最先显示） -->
+<div class="intro" id="introPage">
+  <div class="intro-box">
+    <h2>🐉 脊兽跑酷 · 游戏介绍</h2>
+    <p><strong>游戏目标：</strong>坚持60秒，生命值不耗尽即可通关！</p>
+    <p><strong>生命值：</strong>会随时间自动减少，归0则游戏失败。</p>
+    <p><strong>元宝：</strong>答对+20生命，答错-10生命。</p>
+    <p><strong>石头：</strong>答对+5生命，答错-20生命。</p>
+    <p><strong>答题规则：</strong>答题时时间暂停，但生命仍会缓慢减少。</p>
+    <p><strong>跳过机会：</strong>全程只有1次，谨慎使用！</p>
+    <p><strong>主题：</strong>中国古建筑、脊兽、园林、榫卯文化知识。</p>
+     <div class="btn-center">
+         <button class="intro-btn" onclick="startGame()">开始游戏</button>
+       </div>
+     </div>
+   </div>
+
+<!-- 游戏界面 -->
+<div class="game" id="game">
+  <div class="bg-sky"></div>
+  <div class="bg-roof"></div>
+
+  <div class="top-ui">
+    <div class="hp-bar"><div class="hp-fill" id="hpFill"></div></div>
+    <div class="timer" id="timer">00:00</div>
+  </div>
+
+  <div class="player" id="player"></div>
+
+  <div class="quiz" id="quizBox">
+    <h3 id="quizTitle"></h3>
+    <div id="quizOptions"></div>
+    <button class="skip" id="skipBtn">跳过此题（仅1次机会）</button>
+  </div>
+
+  <div class="modal" id="gameOver">
+    <h2>体力耗尽</h2>
+    <p>坚持时间：<span id="finalTime"></span></p>
+    <button onclick="restart()">重新开始</button>
+    <button onclick="location.href='index.html'">返回主页</button>
+  </div>
+
+  <div class="modal" id="gameWin">
+    <h2>挑战成功！</h2>
+    <p>坚持时间：<span id="winTime"></span></p>
+    <button onclick="location.href='final-knowledge.html'">解锁知识库</button>
+    <button onclick="location.href='index.html'">返回主页</button>
+  </div>
+</div>
+
+<script>
+  // ===================== 音频对象 =====================
+  const bgmIntro = document.getElementById('bgmIntro');
+  const bgmGame = document.getElementById('bgmGame');
+  const clickSound = document.getElementById('clickSound');
+  const winSound = document.getElementById('winSound');
+  const loseSound = document.getElementById('loseSound');
+
+// ===================== 全局静音开关 =====================
+let isMuted = false;
+const soundBtn = document.getElementById('soundBtn');
+
+soundBtn.onclick = function () {
+  isMuted = !isMuted;
+
+  bgmIntro.muted = isMuted;
+  bgmGame.muted = isMuted;
+  clickSound.muted = isMuted;
+  winSound.muted = isMuted;
+  loseSound.muted = isMuted;
+
+  soundBtn.innerHTML = isMuted ? '🔇' : '🔊';
+};
+isMuted = true;
+bgmIntro.muted = true;
+bgmGame.muted = true;
+clickSound.muted = true;
+winSound.muted = true;
+loseSound.muted = true;
+soundBtn.innerHTML = '🔇';
+  // 音量
+  bgmIntro.volume = 0.3;
+  bgmGame.volume = 0.3;
+  clickSound.volume = 0.5;
+  winSound.volume = 0.7;
+  loseSound.volume = 0.7;
+
+  // 🔥 修复：页面加载 + 第一次点击 双保险播放介绍音乐
+  window.addEventListener('load', () => {
+    // 尝试自动播放
+    let playPromise = bgmIntro.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // 自动播放被禁止 → 等用户点一下页面就播放
+        document.addEventListener('click', () => {
+          bgmIntro.play();
+        }, { once: true });
+      });
+    }
+  });
+
+  let hp = 100;
+  let gameRunning = false;
+  let quizActive = false;
+  let questionPool = [];
+
+  let startTime = 0;
+  let timerInterval = null;
+  let gameDuration = 0;
+
+  let canSkip = true;
+  let currentType = null;
+  let itemOnScreen = false;
+  let lastItemIsCoin = null;
+
+  const questions = [
+    { q: "故宫太和殿的脊兽数量共有几只？", a: ["9 只", "10 只", "11 只"], correct: 2 },
+    { q: "中国古建筑中的‘斗拱’主要作用是？", a: ["装饰美观", "承重减震", "防水防潮"], correct: 1 },
+    { q: "下列哪座建筑是山西应县木塔？", a: ["楼阁式塔", "密檐式塔", "覆钵式塔"], correct: 0 },
+    { q: "‘五脊六兽’中的‘六兽’位于哪里？", a: ["屋檐转角", "房梁正中", "大门两侧"], correct: 0 },
+    { q: "江南传统民居最典型的外墙特色是？", a: ["红墙黄瓦", "白墙黛瓦", "石砌高墙"], correct: 1 },
+    { q: "天坛祈年殿屋顶是什么颜色？", a: ["黄色", "蓝色", "绿色"], correct: 1 },
+    { q: "古建筑中‘骑凤仙人’位于哪里？", a: ["脊兽最前端", "屋檐正中", "屋脊末端"], correct: 0 },
+    { q: "下列哪个属于‘硬山顶’特征？", a: ["两侧出山墙", "无正脊", "多层飞檐"], correct: 0 },
+    { q: "佛光寺大殿属于哪个朝代建筑？", a: ["唐代", "宋代", "明代"], correct: 0 },
+    { q: "拙政园位于我国哪座城市？", a: ["苏州", "杭州", "扬州"], correct: 0 },
+    { q: "黄鹤楼属于哪种塔阁建筑？", a: ["楼阁式", "密檐式", "亭式"], correct: 0 },
+    { q: "古建筑中‘藻井’通常出现在？", a: ["室内顶部", "门框", "台阶"], correct: 0 },
+    { q: "长城主要建筑材料不包括？", a: ["青砖", "夯土", "琉璃"], correct: 2 },
+    { q: "‘歇山顶’共有几条屋脊？", a: ["5 条", "9 条", "13 条"], correct: 1 },
+    { q: "下列哪项是古建防水结构？", a: ["飞檐", "斗拱", "雀替"], correct: 0 },
+    { q: "颐和园昆明湖风格模仿哪里？", a: ["江南水乡", "塞外草原", "海滨"], correct: 0 },
+    { q: "‘榫卯结构’最大特点是？", a: ["不用钉子", "速度快", "可燃烧"], correct: 0 },
+    { q: "布达拉宫始建于哪个时期？", a: ["唐代", "宋代", "元代"], correct: 0 },
+    { q: "四合院大门通常开在哪个方位？", a: ["东南角", "正中", "西北角"], correct: 0 },
+    { q: "宋代建筑典籍是？", a: ["营造法式", "天工开物", "考工记"], correct: 0 },
+    { q: "‘瓦当’的主要功能是？", a: ["护檐排水", "承重", "通风"], correct: 0 },
+    { q: "下列哪个是亭的特点？", a: ["有顶无墙", "多层高楼", "封闭院落"], correct: 0 },
+    { q: "赵州桥建造者是？", a: ["李春", "李冰", "鲁班"], correct: 0 },
+    { q: "‘金砖’产自哪里？", a: ["苏州", "北京", "景德镇"], correct: 0 },
+    { q: "古建屋脊走兽数量越多代表？", a: ["等级越高", "年代越久", "面积越大"], correct: 0 },
+    { q: "‘马头墙’主要作用是？", a: ["防火防风", "装饰", "登高"], correct: 0 },
+    { q: "故宫始建于哪个朝代？", a: ["明朝", "元朝", "清朝"], correct: 0 },
+    { q: "‘勾心斗角’原形容什么？", a: ["建筑结构", "官场斗争", "兵法"], correct: 0 },
+    { q: "‘阙楼’作用是？", a: ["标志入口", "瞭望防御", "居住"], correct: 0 },
+    { q: "中国传统古建以什么结构为主？", a: ["木构架", "石结构", "砖混结构"], correct: 0 }
+  ];
+
+  // 开始游戏
+  function startGame() {
+    // 停止介绍音乐 → 播放游戏音乐
+    bgmIntro.pause();
+    bgmGame.currentTime = 0;
+    bgmGame.play().catch(err => {});
+
+    introPage.style.display = "none";
+    game.style.display = "block";
+    gameRunning = true;
+    hp = 100;
+    canSkip = true;
+    itemOnScreen = false;
+    lastItemIsCoin = null;
+    updateHp();
+    startTimer();
+    autoLoseHp();
+    spawnItem();
+  }
+
+  // 计时
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      if (!quizActive) {
+        gameDuration = Math.floor((Date.now() - startTime) / 1000);
+      }
+      let m = String(Math.floor(gameDuration / 60)).padStart(2, '0');
+      let s = String(gameDuration % 60).padStart(2, '0');
+      timer.textContent = `${m}:${s}`;
+
+      if (gameDuration >= 60) {
+        clearInterval(timerInterval);
+        gameRunning = false;
+        
+        // 胜利
+        bgmGame.pause();
+        winSound.play().catch(err => {});
+        
+        winTime.textContent = timer.textContent;
+        gameWin.style.display = "block";
+      }
+    }, 1000);
+  }
+
+  // 自动掉血
+  function autoLoseHp() {
+    if (!gameRunning || quizActive) return;
+    hp -= 0.15;
+    updateHp();
+    if (hp <= 0) {
+      gameOverFunc();
+      return;
+    }
+    setTimeout(autoLoseHp, 50);
+  }
+
+  // 答题掉血
+  let quizHpInterval;
+  function startQuizHpDrain() {
+    clearInterval(quizHpInterval);
+    quizHpInterval = setInterval(() => {
+      hp -= 0.2;
+      updateHp();
+      if (hp <= 0) {
+        clearInterval(quizHpInterval);
+        gameOverFunc();
+      }
+    }, 500);
+  }
+
+  function stopQuizHpDrain() {
+    clearInterval(quizHpInterval);
+  }
+
+  // 更新血量
+  function updateHp() {
+    hp = Math.max(0, hp);
+    hpFill.style.width = hp + "%";
+    if (hp <= 0) {
+      gameOverFunc();
+    }
+  }
+
+  // 游戏结束
+  function gameOverFunc() {
+    gameRunning = false;
+    quizActive = false;
+    clearInterval(timerInterval);
+    stopQuizHpDrain();
+    
+    // 失败音效
+    bgmGame.pause();
+    loseSound.play().catch(err => {});
+    
+    finalTime.textContent = timer.textContent;
+    gameOver.style.display = "block";
+  }
+
+  // 生成物品（交替）
+  function spawnItem() {
+    if (!gameRunning || quizActive || itemOnScreen) return;
+    itemOnScreen = true;
+
+    let isCoin = lastItemIsCoin === null ? Math.random() > 0.5 : !lastItemIsCoin;
+    lastItemIsCoin = isCoin;
+
+    let el = document.createElement("div");
+    el.className = isCoin ? "coin" : "obstacle";
+    game.appendChild(el);
+
+    let x = window.innerWidth;
+    let speed = 4;
+
+    function move() {
+      if (!gameRunning) { el.remove(); itemOnScreen = false; return; }
+      x -= speed;
+      el.style.left = x + "px";
+
+      let p = player.getBoundingClientRect();
+      let r = el.getBoundingClientRect();
+      if (p.right > r.left && p.left < r.right && p.bottom > r.top) {
+        el.remove();
+        itemOnScreen = false;
+        currentType = isCoin ? "coin" : "obstacle";
+        showQuiz();
+        return;
+      }
+
+      if (x < -100) {
+        el.remove();
+        itemOnScreen = false;
+        spawnItem();
+        return;
+      }
+
+      requestAnimationFrame(move);
+    }
+    requestAnimationFrame(move);
+    setTimeout(spawnItem, isCoin ? 3000 : 4000);
+  }
+
+  // 出题（随机不重复）
+  function showQuiz() {
+    quizActive = true;
+    startQuizHpDrain();
+
+    if (questionPool.length === 0) {
+      questionPool = [...questions];
+    }
+    let idx = Math.floor(Math.random() * questionPool.length);
+    let q = questionPool.splice(idx, 1)[0];
+
+    quizTitle.innerText = q.q;
+    quizOptions.innerHTML = "";
+
+    q.a.forEach((text, i) => {
+      let btn = document.createElement("button");
+      btn.innerText = text;
+      btn.onclick = () => {
+        // 点击音效
+        clickSound.currentTime = 0;
+        clickSound.play().catch(err => {});
+        checkAnswer(i, q.correct);
+      };
+      quizOptions.appendChild(btn);
+    });
+
+    skipBtn.style.display = canSkip ? "block" : "none";
+    quizBox.style.display = "block";
+  }
+
+  // 答题
+  function checkAnswer(sel, cor) {
+    quizBox.style.display = "none";
+    quizActive = false;
+    stopQuizHpDrain();
+
+    let isSuccess = sel === cor;
+
+    if (currentType === "coin") {
+      if (isSuccess) hp += 20;
+      else hp -= 10;
+    } else {
+      if (isSuccess) hp += 5;
+      else hp -= 20;
+    }
+
+    updateHp();
+    autoLoseHp();
+    spawnItem();
+  }
+
+  // 跳过
+  skipBtn.onclick = () => {
+    if (!canSkip) return;
+    canSkip = false;
+    quizBox.style.display = "none";
+    quizActive = false;
+    stopQuizHpDrain();
+    autoLoseHp();
+    spawnItem();
+  };
+
+  function restart() {
+    location.reload();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>谁在说谎·古建筑判官</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Ma Shan Zheng", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 🔥 静音按钮 */
+    #soundBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255,255,255,0.9);
+      border: 2px solid #ffb380;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* 首页 - 适配暖黄国风背景 */
+    .home {
+      position: fixed;
+      inset: 0;
+      background: url(images/游戏2.png) center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .panel {
+      background: rgba(255, 245, 230, 0.95);
+      border-radius: 24px;
+      border: 4px solid #ffb380;
+      padding: 36px 40px;
+      max-width: 680px;
+      box-shadow: 0 8px 30px rgba(255, 179, 128, 0.25);
+      text-align: center;
+    }
+
+    .panel h1 {
+      font-size: 36px;
+      color: #ff7a35;
+      margin-bottom: 20px;
+    }
+
+    .panel p {
+      font-size: 16px;
+      color: #5a4a3c;
+      line-height: 1.7;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    .btn-start {
+      padding: 14px 40px;
+      font-size: 22px;
+      background: linear-gradient(135deg, #ffb380, #ffb380);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s;
+      box-shadow: 0 6px 16px rgba(255, 182, 193, 0.3);
+    }
+    .btn-start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(255, 182, 193, 0.4);
+    }
+
+    /* 游戏界面 - 适配暖黄背景 */
+    .game {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      background: url(images/推理.png) center/cover fixed no-repeat;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 0 6px #000;
+      margin-bottom: 20px;
+    }
+
+    /* 三人物 + 火焰 */
+    .roles {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 30px;
+      max-width: 900px;
+      width: 100%;
+      justify-content: center;
+    }
+    .role {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .role img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #ffb380;
+      background: #fffaf0;
+    }
+    .fire {
+      margin-top: 8px;
+      font-size: 22px;
+      color: #ff7a35;
+      font-weight: bold;
+      text-shadow: 0 0 3px #fff;
+    }
+
+    /* 题目面板 - 暖调适配 */
+    .question-box {
+      background: rgba(255, 245, 230, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 900px;
+      width: 100%;
+      border: 3px solid #ffb380;
+      box-shadow: 0 8px 24px rgba(255, 179, 128, 0.2);
+    }
+    .scene {
+      font-size: 20px;
+      color: #5a4a3c;
+      margin-bottom: 24px;
+      line-height: 1.6;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ffe0cc;
+    }
+    .choice {
+      display: flex;
+      align-items: center;
+      background: #fff0e6;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+    .choice:hover {
+      border-color: #ffb380;
+      background: #ffe4d1;
+    }
+    .choice img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 16px;
+      border: 2px solid #ffb380;
+    }
+    .choice-text {
+      font-size: 18px;
+      color: #5a4a3c;
+      line-height: 1.5;
+    }
+
+    /* 结果页 - 暖调适配 */
+    .result {
+      position: fixed;
+      inset: 0;
+      background: url(images/推理.png) center/cover fixed no-repeat;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .result.show {
+      display: flex;
+    }
+    .res-panel {
+      background: rgba(255, 245, 230, 0.95);
+      border-radius: 24px;
+      border: 4px solid #ffb380;
+      padding: 40px;
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(255, 179, 128, 0.25);
+    }
+    .res-panel h2 {
+      font-size: 32px;
+      color: #ff7a35;
+      margin-bottom: 20px;
+    }
+    .info {
+      text-align: left;
+      font-size: 17px;
+      line-height: 1.8;
+      margin-bottom: 26px;
+      color: #5a4a3c;
+    }
+    .info strong {
+      color: #ff7a35;
+    }
+    .correct { color:#27ae60; font-weight:bold; }
+    .wrong { color:#e74c3c; font-weight:bold; }
+    .btns {
+      display: flex;
+      gap:20px;
+      justify-content: center;
+    }
+    .btns button {
+      padding:12px 26px;
+      font-size:18px;
+      border:none;
+      border-radius:12px;
+      background: linear-gradient(135deg,#ffb380,#ffb380);
+      color:#fff;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+    }
+    .btns button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 182, 193, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🔥 静音按钮 -->
+<button id="soundBtn">🔊</button>
+
+<!-- 音频标签（和跑酷完全一样） -->
+<audio id="bgmIntro" loop>
+  <source src="audio/背景2.mp3" type="audio/mpeg">
+</audio>
+<audio id="bgmGame" loop>
+  <source src="audio/背景2.mp3" type="audio/mpeg">
+</audio>
+<audio id="clickSound">
+  <source src="audio/点击.mp3" type="audio/mpeg">
+</audio>
+<audio id="winSound">
+  <source src="audio/成功1.mp3" type="audio/mpeg">
+</audio>
+<audio id="loseSound">
+  <source src="audio/失败1.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 首页 -->
+<div class="home" id="home">
+  <div class="panel">
+    <h1>🕵️‍♂️ 谁在说谎</h1>
+    <p>• 每题给出一段古建筑场景，3 人发言，2 真 1 假</p>
+    <p>• 你作为判官，选出说谎的人，每选一次点亮一枚🔥</p>
+    <p>• 全程不提示对错，4 题为一局</p>
+    <p>• 🔥最多的人 = 你认为的“说谎之王”</p>
+    <p>• 答对 ≥3 题：适合当判官；≤2 题：不适合</p>
+    <p>• 若你认定的说谎之王≠真实说谎之王：评价为「无知者」</p>
+    <button class="btn-start" onclick="start()">开始判案</button>
+  </div>
+</div>
+
+<!-- 游戏界面 -->
+<div class="game" id="game">
+  <div class="game-header">
+    <div>古建筑判官</div>
+    <div>第 <span id="idx">1</span>/4 题</div>
+  </div>
+
+  <div class="roles">
+    <div class="role">
+      <img src="images/人物3.png" alt="甲">
+      <div class="fire" id="fA"></div>
+    </div>
+    <div class="role">
+      <img src="images/人物1.png" alt="乙">
+      <div class="fire" id="fB"></div>
+    </div>
+    <div class="role">
+      <img src="images/人物2.png" alt="丙">
+      <div class="fire" id="fC"></div>
+    </div>
+  </div>
+
+  <div class="question-box">
+    <div class="scene" id="scene"></div>
+
+    <div class="choice" onclick="choose('A')">
+      <img src="images/人物3.png" alt="甲">
+      <div class="choice-text" id="txtA"></div>
+    </div>
+    <div class="choice" onclick="choose('B')">
+      <img src="images/人物1.png" alt="乙">
+      <div class="choice-text" id="txtB"></div>
+    </div>
+    <div class="choice" onclick="choose('C')">
+      <img src="images/人物2.png" alt="丙">
+      <div class="choice-text" id="txtC"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 结果页 -->
+<div class="result" id="result">
+  <div class="res-panel">
+    <h2>📊 判案结果</h2>
+    <div class="info" id="info"></div>
+    <div class="btns">
+      <button onclick="goHome()">再来一局</button>
+      <button onclick="location.href='index.html'">返回首页</button>
+      <button onclick="location.href='final-knowledge.html'">解锁知识库</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const home = document.getElementById('home');
+  const game = document.getElementById('game');
+  const result = document.getElementById('result');
+  const idxEl = document.getElementById('idx');
+  const scene = document.getElementById('scene');
+  const txtA = document.getElementById('txtA');
+  const txtB = document.getElementById('txtB');
+  const txtC = document.getElementById('txtC');
+  const fA = document.getElementById('fA');
+  const fB = document.getElementById('fB');
+  const fC = document.getElementById('fC');
+  const info = document.getElementById('info');
+
+  // ===================== 音频 =====================
+  const bgmIntro = document.getElementById('bgmIntro');
+  const bgmGame = document.getElementById('bgmGame');
+  const clickSound = document.getElementById('clickSound');
+  const winSound = document.getElementById('winSound');
+  const loseSound = document.getElementById('loseSound');
+
+  bgmIntro.volume = 0.3;
+  bgmGame.volume = 0.3;
+  clickSound.volume = 0.5;
+  winSound.volume = 0.7;
+  loseSound.volume = 0.7;
+
+  // 页面加载播放背景音乐
+  window.addEventListener('load', () => {
+    let playPromise = bgmIntro.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        document.addEventListener('click', () => {
+          bgmIntro.play();
+        }, { once: true });
+      });
+    }
+  });
+
+  // 静音按钮
+  let isMuted = false;
+  const soundBtn = document.getElementById('soundBtn');
+  soundBtn.onclick = () => {
+    isMuted = !isMuted;
+    bgmIntro.muted = isMuted;
+    bgmGame.muted = isMuted;
+    clickSound.muted = isMuted;
+    winSound.muted = isMuted;
+    loseSound.muted = isMuted;
+    soundBtn.innerHTML = isMuted ? '🔇' : '🔊';
+  };
+isMuted = true;
+bgmIntro.muted = true;
+bgmGame.muted = true;
+clickSound.muted = true;
+winSound.muted = true;
+loseSound.muted = true;
+soundBtn.innerHTML = '🔇';
+  // ===================== 游戏逻辑 =====================
+  const levels = [
+    [
+      {
+        scene: "三位同学在讨论太和殿脊兽的知识，请判断谁在说谎。",
+        A: "太和殿脊兽共有 10 只，是全国古建筑最高等级。",
+        B: "脊兽的排列顺序是固定的，仙人走兽在前，龙为首。",
+        C: "所有宫殿的脊兽数量都一样，没有等级区别。",
+        liar: "C"
+      },
+      {
+        scene: "三人讨论斗拱的作用，一人说谎，请找出。",
+        A: "斗拱主要用于承重和挑出屋檐。",
+        B: "斗拱只起装饰作用，不承担结构受力。",
+        C: "斗拱能起到一定的抗震减震作用。",
+        liar: "B"
+      },
+      {
+        scene: "关于歇山顶与庑殿顶，谁的说法错误？",
+        A: "庑殿顶有五条屋脊，等级高于歇山顶。",
+        B: "歇山顶是九条屋脊，故宫太和殿用的就是它。",
+        C: "太和殿实际用的是重檐庑殿顶，不是歇山顶。",
+        liar: "B"
+      },
+      {
+        scene: "三人讨论江南园林，一人说谎，请判断。",
+        A: "拙政园、留园都属于苏州四大名园。",
+        B: "江南园林常见白墙黛瓦，风格淡雅。",
+        C: "江南园林多用红墙黄瓦，彰显皇家气势。",
+        liar: "C"
+      }
+    ],
+    [
+      {
+        scene: "三人讨论榫卯结构，谁在说谎？",
+        A: "榫卯不用钉子也能让结构非常牢固。",
+        B: "榫卯只用于家具，古建筑基本不用。",
+        C: "榫卯能分散受力，提升建筑抗震性。",
+        liar: "B"
+      },
+      {
+        scene: "关于佛光寺大殿，谁的说法错误？",
+        A: "佛光寺大殿是唐代木构建筑代表。",
+        B: "它是中国现存最早的木结构建筑之一。",
+        C: "佛光寺大殿建于宋代，风格非常柔美。",
+        liar: "C"
+      },
+      {
+        scene: "关于飞檐，谁在说谎？",
+        A: "飞檐上翘有利于排水和采光。",
+        B: "飞檐只在皇家建筑使用，民间不能用。",
+        C: "园林建筑里也大量使用优美的飞檐。",
+        liar: "B"
+      },
+      {
+        scene: "关于瓦当与滴水，谁在说谎？",
+        A: "瓦当在檐头，保护木构件不被雨水侵蚀。",
+        B: "滴水是下垂的尖状瓦，引导水流。",
+        C: "瓦当和滴水只起装饰，没有实用功能。",
+        liar: "C"
+      }
+    ]
+  ];
+
+  let qList, idx, fire, userAns, realAns;
+
+  function start() {
+    // 切换音乐
+    bgmIntro.pause();
+    bgmIntro.currentTime = 0;
+    bgmGame.currentTime = 0;
+    bgmGame.play().catch(err => {});
+
+    home.style.display = "none";
+    game.style.display = "flex";
+    result.classList.remove("show");
+    qList = levels[Math.floor(Math.random() * levels.length)];
+    idx = 0;
+    fire = {A:0, B:0, C:0};
+    userAns = [];
+    realAns = qList.map(x => x.liar);
+    load();
+  }
+
+  function load() {
+    idxEl.textContent = idx + 1;
+    const q = qList[idx];
+    scene.textContent = q.scene;
+    txtA.textContent = q.A;
+    txtB.textContent = q.B;
+    txtC.textContent = q.C;
+    fA.textContent = "🔥".repeat(fire.A);
+    fB.textContent = "🔥".repeat(fire.B);
+    fC.textContent = "🔥".repeat(fire.C);
+  }
+
+  function choose(p) {
+    // 点击音效
+    clickSound.currentTime = 0;
+    clickSound.play().catch(err => {});
+
+    userAns.push(p);
+    fire[p]++;
+    idx++;
+    if (idx < 4) {
+      load();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    game.style.display = "none";
+    result.classList.add("show");
+
+    // 结果音效
+    bgmGame.pause();
+    let corr = 0;
+    realAns.forEach((x, i) => { if (userAns[i] === x) corr++; });
+    if (corr >= 3) {
+      winSound.play().catch(err => {});
+    } else {
+      loseSound.play().catch(err => {});
+    }
+
+    let realCnt = {A:0, B:0, C:0};
+    realAns.forEach(x => realCnt[x]++);
+
+    let uMax = Math.max(fire.A, fire.B, fire.C);
+    let uKing = Object.keys(fire).find(k => fire[k] === uMax);
+    let rMax = Math.max(realCnt.A, realCnt.B, realCnt.C);
+    let rKing = Object.keys(realCnt).find(k => realCnt[k] === rMax);
+
+    let judge = corr >= 3 ?
+      '<span class="correct">✅ 你断案精准，适合担任古建筑判官！</span>' :
+      '<span class="wrong">❌ 你判断失误较多，不适合担任判官。</span>';
+
+    let ignor = uKing === rKing ?
+      '<span class="correct">✅ 你准确识别了真正的说谎之王。</span>' :
+      '<span class="wrong">⚠ 你被判定为：乱判官</span>';
+
+    let html = `
+      <p>答对：${corr} 题　答错：${4 - corr} 题</p>
+      <p>${judge}</p>
+      <p>你认定的说谎最多者：${uKing}（${fire[uKing]} 火）</p>
+      <p>真实说谎最多者：${rKing}（${realCnt[rKing]} 次）</p>
+      <p>${ignor}</p><br>
+      <p><strong>正确答案：</strong></p>
+    `;
+    qList.forEach((q, i) => {
+      let ok = userAns[i] === q.liar;
+      html += `<p>第${i+1}题：说谎者是 ${q.liar}，你选 ${userAns[i]} —— <span class="${ok?'correct':'wrong'}">${ok?'正确':'错误'}</span></p>`;
+    });
+    info.innerHTML = html;
+  }
+
+  function goHome() {
+    // 回到首页恢复音乐
+    bgmGame.pause();
+    bgmGame.currentTime = 0;
+    bgmIntro.currentTime = 0;
+    bgmIntro.play().catch(err => {});
+
+    result.classList.remove("show");
+    game.style.display = "none";
+    home.style.display = "flex";
+  }
+</script>
+</body>
+</html>

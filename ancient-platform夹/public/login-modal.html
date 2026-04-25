@@ -1,0 +1,220 @@
+<style>
+.login-modal-mask{
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    z-index:9999;
+    display:none;
+}
+.login-box{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:#fff;
+    width:420px;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+.close-btn{
+    position:absolute;
+    top:15px;
+    right:15px;
+    width:30px;
+    height:30px;
+    line-height:30px;
+    text-align:center;
+    border-radius:50%;
+    background:#8c2318;
+    color:#fff;
+    font-size:18px;
+    cursor:pointer;
+}
+.close-btn:hover{
+    background:#a83227;
+}
+.login-box h3{
+    margin-bottom:20px;
+    text-align:center;
+    color:#8c2318;
+    font-family:'Ma Shan Zheng',cursive;
+    font-size:1.8rem;
+}
+.tab{
+    display:flex;
+    margin-bottom:20px;
+}
+.tab button{
+    flex:1;
+    padding:10px;
+    border:none;
+    background:none;
+    font-size:16px;
+    cursor:pointer;
+}
+.tab button.active{
+    color:#8c2318;
+    border-bottom:2px solid #8c2318;
+}
+.form-item{
+    margin-bottom:15px;
+}
+.form-item input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+.login-btn{
+    width:100%;
+    padding:12px;
+    background:#8c2318;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:10px;
+}
+.login-btn:hover{
+    background:#a83227;
+}
+.msg{
+    text-align:center;
+    margin-bottom:10px;
+    display:none;
+    padding:5px;
+    border-radius:4px;
+}
+.msg-error{
+    color:#dc2626;
+    background:#fef2f2;
+}
+.msg-success{
+    color:#059669;
+    background:#f0fdf4;
+}
+</style>
+
+<div class="login-modal-mask" id="loginModal">
+    <div class="login-box">
+        <div class="close-btn" onclick="closeLogin()">×</div>
+        <h3>用户中心</h3>
+        <div class="msg" id="msg"></div>
+
+        <div class="tab">
+            <button class="active" data-panel="loginPanel">登录</button>
+            <button data-panel="regPanel">注册</button>
+            <button data-panel="forgetPanel">忘记密码</button>
+        </div>
+
+        <div id="loginPanel" class="panel">
+            <div class="form-item"><input id="loginUser" placeholder="用户名"></div>
+            <div class="form-item"><input id="loginPwd" type="password" placeholder="密码"></div>
+            <button class="login-btn" onclick="userLogin()">登录</button>
+        </div>
+
+        <div id="regPanel" class="panel" style="display:none">
+            <div class="form-item"><input id="regUser" placeholder="用户名"></div>
+            <div class="form-item"><input id="regPwd" type="password" placeholder="密码"></div>
+            <button class="login-btn" onclick="userRegister()">注册</button>
+        </div>
+
+        <div id="forgetPanel" class="panel" style="display:none">
+            <div class="form-item"><input id="forgetUser" placeholder="用户名"></div>
+            <div class="form-item"><input id="newPwd" type="password" placeholder="新密码"></div>
+            <button class="login-btn" onclick="resetPassword()">重置密码</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// 统一提示
+function showMsg(text, isSuccess = false) {
+  const msg = document.getElementById('msg');
+  msg.innerText = text;
+  msg.className = 'msg ' + (isSuccess ? 'msg-success' : 'msg-error');
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 2500);
+}
+
+// 切换面板
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).style.display = 'block';
+  document.querySelector(`[data-panel="${name}"]`).classList.add('active');
+  showMsg('');
+}
+
+document.querySelectorAll('.tab button').forEach(b => {
+  b.onclick = () => switchPanel(b.dataset.panel);
+});
+
+// 登录
+function userLogin() {
+  const u = $('#loginUser').val().trim();
+  const p = $('#loginPwd').val().trim();
+  if (!u || !p) return showMsg('请输入用户名和密码');
+
+  $.post('/api/login', { username: u, password: p })
+  .done(res => {
+    if (res.code === 200) {
+      showMsg('登录成功', true);
+      localStorage.setItem('user', u);
+      setTimeout(() => { closeLogin(); updateUserStatus(); }, 800);
+    } else {
+      showMsg(res.msg || '登录失败，请检查账号密码');
+    }
+  })
+  .fail(() => {
+    showMsg('登录失败，请检查账号密码');
+  });
+}
+
+// 注册
+function userRegister() {
+  const u = $('#regUser').val().trim();
+  const p = $('#regPwd').val().trim();
+  if (!u || !p) return showMsg('请填写完整信息');
+
+  $.post('/api/register', { username: u, password: p })
+  .done(res => {
+    if (res.code === 200) {
+      showMsg('注册成功', true);
+      setTimeout(() => switchPanel('loginPanel'), 1000);
+    } else {
+      showMsg(res.msg || '注册失败');
+    }
+  })
+  .fail(() => {
+    showMsg('注册失败');
+  });
+}
+
+// 重置密码
+function resetPassword() {
+  const u = $('#forgetUser').val().trim();
+  const p = $('#newPwd').val().trim();
+  if (!u || !p) return showMsg('请填写完整信息');
+
+  $.post('/api/reset-pwd', { username: u, newPassword: p })
+  .done(res => {
+    if (res.code === 200) {
+      showMsg('重置成功', true);
+      setTimeout(() => switchPanel('loginPanel'), 1000);
+    } else {
+      showMsg(res.msg || '重置失败');
+    }
+  })
+  .fail(() => {
+    showMsg('重置失败');
+  });
+}
+
+window.openLogin = () => $('#loginModal').fadeIn(200);
+window.closeLogin = () => $('#loginModal').fadeOut(200);
+</script>

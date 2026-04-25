@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古建详情 - 卷轴展开</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent !important;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        /* ========== 卷轴容器（修复动画，解决错位、看不见） ========== */
+        .scroll-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            max-width: 1100px;
+            height: 100vh;
+            min-height: 650px;
+            background: #f7f1e3;
+            background-image: url('https://imgs.aigei.com/preview/2021/11/15/616a3e0d8f578.jpg!web');
+            background-blend-mode: soft-light;
+            border-radius: 12px;
+            border: 6px solid #a67c52;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: scrollOpen 0.5s ease-out forwards paused;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 35px 40px;
+            overflow-y: auto;
+        }
+
+        /* 修复卷轴展开动画：用scale代替width，解决错位、看不见 */
+        @keyframes scrollOpen {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+        /* ========== 卷轴两端装饰 ========== */
+        .scroll-container::before,
+        .scroll-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: #8C2318;
+            border-radius: 4px;
+        }
+        .scroll-container::before { left: 0; }
+        .scroll-container::after { right: 0; }
+
+        /* ========== 详情内容样式 ========== */
+        #detailImg {
+    width: 100%;
+    max-width: 780px;
+    height: 280px;
+    object-fit: cover;
+    border: 3px solid #a67c52;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    opacity: 1;
+}
+
+#detailName {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 30px;
+    color: #8C2318;
+    text-align: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #8C2318;
+    padding-bottom: 8px;
+    width: 90%;
+    text-shadow: 1px 1px 2px #D4AF37, 0 0 5px rgba(212, 175, 55, 0.5);
+    letter-spacing: 6px;
+    opacity: 1;
+}
+
+.detail-info {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    opacity: 1;
+}
+.detail-info span {
+    background: #f7f1e3;
+    border: 1px solid #8C2318;
+    color: #8C2318;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 20px;
+}
+
+#detailIntro {
+    font-size: 16px;
+    line-height: 2;
+    color: #222;
+    text-align: justify;
+    text-indent: 2em;
+    padding: 0 25px;
+    margin-bottom: 15px;
+    white-space: pre-line;
+    opacity: 1;
+}
+
+.detail-extra {
+    width: 90%;
+    margin-bottom: 15px;
+    padding: 15px 20px;
+    background: rgba(140, 35, 24, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(140, 35, 24, 0.1);
+    opacity: 1;
+}
+.detail-extra .label {
+    font-weight: bold;
+    color: #8C2318;
+    font-size: 16px;
+    margin-bottom: 8px;
+    font-family: 'Ma Shan Zheng', cursive;
+    letter-spacing: 2px;
+}
+.detail-extra .content {
+    color: #333;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+           </style>
+
+    <!-- 引入字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="scroll-container">
+        <img id="detailImg" src="">
+        <h2 id="detailName"></h2>
+        <div class="detail-info">
+            <span id="detailEra"></span>
+            <span id="detailLoc"></span>
+            <span id="detailType"></span>
+        </div>
+        <p id="detailIntro"></p>
+        <div class="detail-extra">
+            <div class="label">结构特点</div>
+            <div class="content" id="detailFeature"></div>
+        </div>
+        <div class="detail-extra">
+            <div class="label">代表古建</div>
+            <div class="content" id="detailRepresent"></div>
+        </div>
+        <div class="detail-extra">
+            <div class="label">营造小知识</div>
+            <div class="content" id="detailKnowledge"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            const type = new URLSearchParams(location.search).get('type');
+            if(!type) return;
+
+            // 9大类古建数据（完整丰富版）
+            const data = {
+                "宫殿": {
+                    Name: "宫殿建筑",
+                    Era: "历代",
+                    Location: "全国各地",
+                    Type: "宫殿建筑",
+                    ImageUrl: "./images/宫殿.png",
+                    Intro: "「天子以四海为家，非壮丽无以重威」\n宫殿是中国古代等级最高的建筑形制，以对称布局、恢弘体量、繁复彩绘彰显皇权威严。从秦阿房宫、汉未央宫到唐大明宫、明清故宫，均遵循“前朝后寝、左祖右社”的礼制格局，是东方营造秩序的最高体现。",
+                    Feature: "中轴对称、重檐庑殿、斗拱繁复、金砖铺地",
+                    Representative: "🏯 北京故宫、🏯 大明宫、🏯 沈阳故宫、🏯 布达拉宫",
+                    Knowledge: "斗拱是宫殿的标志性构件，不仅承重挑檐，更是等级象征。只有皇家建筑才能使用最繁复的重昂五踩斗拱。"
+                },
+                "园林": {
+                    Name: "园林建筑",
+                    Era: "明清鼎盛",
+                    Location: "江南、北京",
+                    Type: "园林建筑",
+                    ImageUrl: "./images/园林.png",
+                    Intro: "「虽由人作，宛自天开」\n中国园林以自然山水为蓝本，叠山理水、筑亭造楼，将文人理想融入方寸之间。园林不追求对称，而在意境，一步一景，曲折婉转，是东方美学的极致体现。",
+                    Feature: "曲径通幽、借景对景、亭台楼阁、小桥流水",
+                    Representative: "🌿 苏州园林、🌿 颐和园、🌿 拙政园、🌿 留园",
+                    Knowledge: "园林最讲究“借景”，将园外山水、塔影、山色引入视野，实现小园见大天地的空间艺术。"
+                },
+                "古塔": {
+                    Name: "古塔建筑",
+                    Era: "汉至明清",
+                    Location: "全国各地",
+                    Type: "古塔建筑",
+                    ImageUrl: "./images/古塔.png",
+                    Intro: "「浮图耸峙，镇护山河」\n古塔最初用于供奉舍利、经卷，后来逐渐成为地标性景观建筑。材质以木、砖、石为主，楼阁式、密檐式、覆钵式各具特色，高耸挺拔，千年不倒。",
+                    Feature: "层级分明、飞檐翘角、砖石结构、登高望远",
+                    Representative: "🗼 大雁塔、🗼 应县木塔、🗼 雷峰塔、🗼 开封铁塔",
+                    Knowledge: "古塔多为奇数层，寓意“天主动，奇数为阳”，常见七层、九层、十三层，象征功德圆满。"
+                },
+                "古桥": {
+                    Name: "古桥建筑",
+                    Era: "隋、唐、宋、明",
+                    Location: "全国各地",
+                    Type: "古桥建筑",
+                    ImageUrl: "./images/古桥.png",
+                    Intro: "「飞虹跨水，天堑通途」\n古桥不仅是交通设施，更是水利与美学的结合。拱桥如虹，梁桥稳健，索桥险峻，每一座古桥都承载着一方水土的烟火气，也是古代工程技术的奇迹。",
+                    Feature: "拱券结构、榫卯衔接、石材砌筑、兼顾实用与美学",
+                    Representative: "🌉 赵州桥、🌉 卢沟桥、🌉 广济桥、🌉 洛阳桥",
+                    Knowledge: "赵州桥是世界现存最古老敞肩石拱桥，千年来历经洪水地震依然屹立，被称为“天下第一桥”。"
+                },
+                "民居": {
+                    Name: "民居建筑",
+                    Era: "明清至近代",
+                    Location: "全国各地",
+                    Type: "民居建筑",
+                    ImageUrl: "./images/民居.png",
+                    Intro: "「因地制宜，天人合一」\n民居是最贴近生活的古建筑，就地取材，顺应气候。北方四合院厚重封闭，南方徽派清雅秀丽，西南吊脚楼依山傍水，藏着最真实的人间烟火。",
+                    Feature: "就地取材、合院布局、白墙黛瓦、适应气候",
+                    Representative: "🏡 徽派民居、🏡 北京四合院、🏡 福建土楼、🏡 陕北窑洞",
+                    Knowledge: "徽派民居的“马头墙”不仅美观，更能防火防风，是古代民居极高的营造智慧。"
+                },
+                "坛庙": {
+                    Name: "坛庙建筑",
+                    Era: "明清",
+                    Location: "北京等地",
+                    Type: "坛庙建筑",
+                    ImageUrl: "./images/坛庙.png",
+                    Intro: "「敬天法祖，礼序乾坤」\n坛庙用于祭祀天地、祖先、圣贤，是礼制文化的核心载体。建筑肃穆庄重，色彩素雅，强调秩序与敬畏，不尚华丽，而重精神象征。",
+                    Feature: "礼制森严、轴线对称、色调肃穆、祭祀专用",
+                    Representative: "🛕 天坛、🛕 太庙、🛕 孔庙、🛕 社稷坛",
+                    Knowledge: "天坛祈年殿不用一根铁钉，全靠榫卯咬合，是中国古代木构建筑的巅峰之作。"
+                },
+                "宗教": {
+                    Name: "宗教建筑",
+                    Era: "汉至明清",
+                    Location: "全国各地",
+                    Type: "宗教建筑",
+                    ImageUrl: "./images/宗教.png",
+                    Intro: "「梵音缭绕，超凡脱俗」\n佛教寺院、道教宫观多依山而建，与自然相融。建筑造型飘逸，色彩神秘，殿宇错落，营造出宁静空灵的氛围，是信仰与艺术的完美结合。",
+                    Feature: "依山而建、殿宇错落、造像庄严、意境空灵",
+                    Representative: "🕊️ 少林寺、🕊️ 普陀山、🕊️ 武当山、🕊️ 悬空寺",
+                    Knowledge: "悬空寺建于悬崖峭壁之上，半插飞梁为基，历经1500年完好无损，被誉为“天下巨观”。"
+                },
+                "楼阁": {
+                    Name: "楼阁建筑",
+                    Era: "唐宋明清",
+                    Location: "全国各地",
+                    Type: "楼阁建筑",
+                    ImageUrl: "./images/楼阁.png",
+                    Intro: "「层楼叠榭，登临望远」\n楼阁高耸开阔，多用于观景、藏书、祈福。飞檐翘角，气势雄浑，历来是文人墨客登楼赋诗、抒发胸怀之地，承载无数千古名篇。",
+                    Feature: "多层高耸、飞檐翘角、登临远眺、气势壮阔",
+                    Representative: "🏛️ 黄鹤楼、🏛️ 岳阳楼、🏛️ 滕王阁、🏛️ 蓬莱阁",
+                    Knowledge: "中国四大名楼均依山傍水，建筑多为“明三暗七”结构，外观三层，内部七层，寓意步步高升。"
+                },
+                "陵墓": {
+                    Name: "陵墓建筑",
+                    Era: "历代帝王",
+                    Location: "陕西、北京等地",
+                    Type: "陵墓建筑",
+                    ImageUrl: "./images/陵墓.png",
+                    Intro: "「事死如事生，陵寝若帝居」\n帝王陵墓严格按照风水选址，地下宫殿仿照阳间规制，地面神道、石像生、封土构成完整体系，深藏王朝兴衰与等级密码。",
+                    Feature: "风水选址、地下宫殿、石像生仪仗、封土宏伟",
+                    Representative: "🪦 秦始皇陵、🪦 明十三陵、🪦 清东陵、🪦 乾陵",
+                    Knowledge: "帝王陵墓讲究“背山面水”，神道石像生象征帝王出行仪仗，体现“事死如事生”的丧葬观念。"
+                }
+            };
+
+            const item = data[type];
+            if(item){
+                $("#detailName").text(item.Name);
+                $("#detailEra").text(item.Era);
+                $("#detailLoc").text(item.Location);
+                $("#detailType").text(item.Type);
+                $("#detailIntro").text(item.Intro);
+                $("#detailImg").attr("src", item.ImageUrl);
+                $("#detailFeature").text(item.Feature);
+                $("#detailRepresent").text(item.Representative);
+                $("#detailKnowledge").text(item.Knowledge);
+		// 内容全部填完 → 再开启动画
+    		$(".scroll-container").css("animation-play-state", "running");
+            }
+        });
+    </script>
+
+</body>
+</html>

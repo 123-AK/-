@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 营造志·中华古建筑数字图鉴</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap');
+        :root { --primary:#8C2318; --bg:#F8F4E9; --border: 2px solid #8C2318;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--bg);font-family:'Noto Serif SC',serif;}
+        .main-title{width:100%;background:var(--primary);color:#fff;text-align:center;font-size:clamp(2.5rem,6vw,4rem);padding:20px 0;font-family:'Ma Shan Zheng',cursive;letter-spacing:3px;}
+        .nav-bar {
+                width: 100%;
+                padding: 16px 0;
+                background: rgba(255,255,255,0.9);
+                display: flex;
+                border-top: 2px solid var(--gold);
+                border-bottom: 2px solid var(--primary);
+                position: relative;
+            }
+            
+            .nav-bar a {
+                flex: 1;
+                color: var(--primary);
+                text-decoration: none;
+                font-family: 'Ma Shan Zheng',cursive;
+                text-align: center;
+                padding: 8px 30px; /* 给云纹留出空间 */
+                font-size: 18px;
+                letter-spacing: 2px;
+                position: relative;
+            }
+            
+            /* 选项 前面云纹 */
+            .nav-bar a::before {
+                content: "☁";
+                font-size: 16px;
+                color: var(--primary);
+                position: absolute;
+                left: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                opacity: 0.7;
+            }
+            
+            
+        /* 每个栏目之间 回纹分割线 */
+        .nav-bar a:not(:last-child)::after {
+            content: "┃";
+            color: var(--gold);
+            font-size: 20px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+            
+            .nav-bar a.active {
+                background: var(--primary);
+                color: white;
+            }
+            
+            .nav-bar a:hover {
+                color: #fff;
+                background-color: var(--primary);
+            }
+
+
+        /* 修复后的3D轮播样式：解决重叠/错位，文案居中 */
+        .carousel3d {
+            position: relative;
+            width: 100%;
+            height: 580px;
+            margin: 30px auto 40px;/* ✅ 只加顶部30px间距 */
+            perspective: 1500px; /* 调整透视值，避免重叠 */
+            overflow: hidden;
+        }
+        .carousel3d-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        .carousel3d-item {
+            position: absolute;
+            width: 75%;
+            height: 90%;
+            left: 50%;
+            top: 50%;
+            margin-left: -37.5%;
+            margin-top: -261px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backface-visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.2,0.7,0.3,1);
+        }
+        .carousel3d-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+      .carousel3d-item p {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 28px;
+ font-family: 'Ma Shan Zheng', cursive;
+    font-weight: 600;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.4), transparent);
+    padding: 12px 60px;
+    border-radius: 50px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    white-space: nowrap;
+    z-index: 2;
+}
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+        }
+        .carousel-btn:hover {
+            background: #8C2318;
+        }
+        .carousel-btn.prev { left: 30px; }
+        .carousel-btn.next { right: 30px; }
+
+        .category-section {
+            padding: 40px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-family: 'Ma Shan Zheng', cursive;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+        }
+        
+        .category-card {
+            background: white;
+            border: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            box-shadow: var(--shadow);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .category-card img {
+            height: 130px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .category-card-body {
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .category-card-title {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        .category-card-text {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .category-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        
+        .category-btn:hover {
+            background: #6a1a14;
+            color: white;
+        }
+        
+
+        /* 右侧小知识卡片 */
+        .knowledge-spot {
+            background: white;
+            border: var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .knowledge-spot:last-child {
+            margin-bottom: 0;
+        }
+        .knowledge-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-family: 'Ma Shan Zheng', cursive;
+            text-align: center;
+        }
+        .knowledge-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .knowledge-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .knowledge-text {
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-bar a {
+                font-size: clamp(1rem, 3vw, 18px);
+            }
+            .knowledge-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .carousel-btn {
+                width: 45px;
+                height: 45px;
+            }
+            .carousel3d {
+                height: 450px;
+            }
+            .carousel3d-item {
+                width: 88%;
+                margin-left: -44%;
+                margin-top: -202.5px;
+            }
+            .carousel3d-item p {
+                font-size: 22px;
+                padding: 8px 24px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-title {
+                font-size: clamp(2rem, 8vw, 3rem);
+                padding: 15px 0;
+            }
+        }
+
+
+/* 全屏透明弹窗，覆盖整个屏幕 */
+.detail-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent !important;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 投影画框（承载iframe，发光效果） */
+.projection-frame {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 100vh;
+  background: transparent;
+  border-radius: 16px;
+  /*box-shadow: 0 8px 24px rgba(0,0,0,0.15); /* 替换原来的发光阴影 */
+  overflow: hidden;
+ animation: projectionShow 0.2s ease-out forwards; /* 去掉 paused 0.1s */
+}
+
+@keyframes projectionShow {
+  0% { opacity: 0; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+/* 关闭按钮（印章样式，右上角） */
+.close-btn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #8C2318;
+  color: #fff;
+  font-size: 24px;
+  border: 2px solid #f7f1e3;
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Ma Shan Zheng', cursive;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  transition: all 0.5s ease;
+}
+.close-btn:hover {
+  background: #6a1a14;
+  transform: scale(1.1);
+}
+
+/* iframe样式：适配画框，无滚动条 */
+#detailFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  scrolling: no;
+}
+</style>
+</head>
+<body>
+
+    <h1 class="main-title">营造志·中华古建筑数字图鉴</h1>
+    <div class="nav-bar">
+        <a href="index.html" class="active">首页</a>
+        <a href="list.html">古建筑总览</a>
+    <a href="map.html">古建筑地图分布</a>
+    <a href="knowledge.html">趣味知识科普</a>
+    <a href="about.html" >项目背景说明</a>
+    </div>
+
+    <!-- 优化轮播顺序：故宫→园林→长城→天坛，逻辑更顺畅 -->
+    <div class="carousel3d">
+        <div class="carousel3d-inner" id="carousel3d">
+            <div class="carousel3d-item active">
+                <img src="./images/轮播图2.png" alt="故宫宫殿" onerror="this.src='https://via.placeholder.com/1920x1080?text=故宫宫殿'">
+                <p>紫禁之巅，天下归心</p>
+            </div>
+<div class="carousel3d-item">
+                <img src="./images/轮播图4.png" alt="园林全景" onerror="this.src='https://via.placeholder.com/1920x1080?text=园林全景'">
+                <p>咫尺山林，乾坤入画</p>
+            </div>
+            <div class="carousel3d-item">
+                <img src="./images/轮播图3.png" alt="苏州园林" onerror="this.src='https://via.placeholder.com/1920x1080?text=苏州园林'">
+                <p>月洞藏春，一园江南</p>
+            </div>
+            <div class="carousel3d-item">
+                <img src="./images/轮播图1.png" alt="万里长城" onerror="this.src='https://via.placeholder.com/1920x1080?text=万里长城'">
+                <p>雄关漫道，山河永固</p>
+            </div>
+            <div class="carousel3d-item">
+                <img src="./images/轮播图5.png" alt="天坛祈年殿" onerror="this.src='https://via.placeholder.com/1920x1080?text=天坛祈年殿'">
+                <p>天坛祈年，天人合一</p>
+            </div>
+            
+        </div>
+        <button class="carousel-btn prev" onclick="prev()">&lt;</button>
+        <button class="carousel-btn next" onclick="next()">&gt;</button>
+    </div>
+
+    <!-- ============== 左右严格 5:5 平分布局 ============== -->
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            <!-- 左侧 50%：9类卡片 -->
+            <div class="col-6 half-left">
+                <div class="text-center mb-4">
+                    <h2 class="section-title">九大类古建</h2>
+                </div>
+                <div class="row g-3">
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/宫殿.png" onerror="this.src='https://picsum.photos/400/200?random=10'">
+                        <div class="category-card-body"><h5 class="category-card-title">宫殿建筑</h5><p class="category-card-text">皇家礼制，恢弘庄严</p><button onclick="openDetail('宫殿')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/园林.png" onerror="this.src='https://picsum.photos/400/200?random=11'">
+                        <div class="category-card-body"><h5 class="category-card-title">园林建筑</h5><p class="category-card-text">咫尺山林，宛自天开</p><button onclick="openDetail('园林')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/古塔.png" onerror="this.src='https://picsum.photos/400/200?random=12'">
+                        <div class="category-card-body"><h5 class="category-card-title">古塔建筑</h5><p class="category-card-text">砖石为骨，岁月为魂</p><button onclick="openDetail('古塔')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/古桥.png" onerror="this.src='https://picsum.photos/400/200?random=13'">
+                        <div class="category-card-body"><h5 class="category-card-title">古桥建筑</h5><p class="category-card-text">飞虹跨水，连接古今</p><button onclick="openDetail('古桥')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/民居.png" onerror="this.src='https://picsum.photos/400/200?random=14'">
+                        <div class="category-card-body"><h5 class="category-card-title">民居建筑</h5><p class="category-card-text">乡土烟火，人文温度</p><button onclick="openDetail('民居')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/坛庙.png" onerror="this.src='https://picsum.photos/400/200?random=15'">
+                        <div class="category-card-body"><h5 class="category-card-title">坛庙建筑</h5><p class="category-card-text">敬天法祖，礼制传承</p><button onclick="openDetail('坛庙')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/宗教.png" onerror="this.src='https://picsum.photos/400/200?random=16'">
+                        <div class="category-card-body"><h5 class="category-card-title">宗教建筑</h5><p class="category-card-text">梵音缭绕，信仰之所</p><button onclick="openDetail('宗教')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/楼阁.png" onerror="this.src='https://picsum.photos/400/200?random=17'">
+                        <div class="category-card-body"><h5 class="category-card-title">楼阁建筑</h5><p class="category-card-text">登高望远，尽览山河</p><button onclick="openDetail('楼阁')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                    <div class="col-4"><div class="category-card">
+                        <img src="./images/陵墓.png" onerror="this.src='https://picsum.photos/400/200?random=18'">
+                        <div class="category-card-body"><h5 class="category-card-title">陵墓建筑</h5><p class="category-card-text">地下宫殿，王朝印记</p><button onclick="openDetail('陵墓')" class="category-btn">查看详情</button></div>
+                    </div></div>
+                </div>
+            </div>
+
+    <!-- 右侧 50%：小知识填满 -->
+            <div class="col-6 half-right d-flex flex-column">
+                <div class="text-center mb-4">
+                    <h2 class="section-title">古建小知识</h2>
+                </div>
+    
+                <div class="knowledge-spot">
+                    <h4 class="knowledge-title">斗拱 · 古建骨架</h4>
+                    <div class="knowledge-content">
+                        <img src="./images/斗拱.png" class="knowledge-img" onerror="this.src='https://picsum.photos/80/80?random=31'">
+                        <div class="knowledge-text"><strong>斗拱</strong> 是中国古建筑独有的受力构件，用于承载屋檐重量，同时极具装饰美感，是等级与工艺的象征。</div>
+                    </div>
+                </div>
+    
+                <div class="knowledge-spot">
+                    <h4 class="knowledge-title">榫卯 · 无钉工艺</h4>
+                    <div class="knowledge-content">
+                        <img src="./images/榫卯.jpg" class="knowledge-img" onerror="this.src='https://picsum.photos/80/80?random=32'">
+                        <div class="knowledge-text"><strong>榫卯</strong> 凹凸咬合，不用一钉一胶，却能千年稳固。结构兼具弹性与刚性，抗震能力极强。</div>
+                    </div>
+                </div>
+    
+                <div class="knowledge-spot">
+                    <h4 class="knowledge-title">屋顶 · 建筑冠冕</h4>
+                    <div class="knowledge-content">
+                        <img src="./images/屋顶.jpg" class="knowledge-img" onerror="this.src='https://picsum.photos/80/80?random=33'">
+                        <div class="knowledge-text">庑殿顶、歇山顶、悬山顶、硬山顶……不同屋顶对应严格等级，是中国古代礼制在建筑上的直接体现。</div>
+                    </div>
+                </div>
+    
+                <div class="knowledge-spot">
+                    <h4 class="knowledge-title">色彩 · 等级语言</h4>
+                    <div class="knowledge-content">
+                        <img src="./images/色彩.jpg" class="knowledge-img" onerror="this.src='https://picsum.photos/80/80?random=34'">
+                        <div class="knowledge-text">皇家多用黄红，庙宇青灰，民居素雅。色彩不仅是装饰，更是身份、等级与文化寓意的直观表达。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 营造志·中华古建筑数字图鉴 | 传承古建筑文化，助力数字化保护</p>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let current = 0;
+        const items = document.querySelectorAll('.carousel3d-item');
+        const inner = document.getElementById('carousel3d');
+        const count = items.length;
+
+        // 修复后的3D轮播逻辑：彻底解决重叠/错位
+        function updateCarousel() {
+            items.forEach((el, i) => {
+                let offset = i - current;
+                if (offset < 0) offset += count;
+
+                let scale = 1;
+                let x = 0;
+                let z = 0;
+                let opacity = 1;
+
+                if (offset === 0) {
+                    scale = 1;
+                    z = 150;
+                    opacity = 1;
+                } else if (offset === 1) {
+                    scale = 0.85;
+                    x = 320;
+                    z = -100;
+                    opacity = 0.75;
+                } else if (offset === count - 1) {
+                    scale = 0.85;
+                    x = -320;
+                    z = -100;
+                    opacity = 0.75;
+                } else {
+                    scale = 0.7;
+                    opacity = 0;
+                    z = -200;
+                }
+
+                el.style.transform = `translateX(${x}px) scale(${scale}) translateZ(${z}px)`;
+                el.style.opacity = opacity;
+            });
+        }
+
+        function prev() {
+            current = (current - 1 + count) % count;
+            updateCarousel();
+        }
+
+        function next() {
+            current = (current + 1) % count;
+            updateCarousel();
+        }
+
+        // 自动轮播 + 鼠标悬停暂停
+        let autoTimer = setInterval(next, 5000);
+        document.querySelector('.carousel3d').addEventListener('mouseenter', () => clearInterval(autoTimer));
+        document.querySelector('.carousel3d').addEventListener('mouseleave', () => {
+            autoTimer = setInterval(next, 3000);
+        });
+
+        updateCarousel();
+    </script>
+
+    <script>
+        $(function(){
+            if(!$("#loginModal").length){
+                $.get("login-modal.html", function(html){
+                    $('body').append(html);
+                    updateUserStatus();
+                });
+            }else{
+                updateUserStatus();
+            }
+        });
+
+        // 优化登录按钮：固定右上角，不遮挡导航
+        function updateUserStatus(){
+            const user = localStorage.getItem('user');
+            $("#userInfo, #loginBtn").remove();
+            $("body").append(`
+                <div id="userInfo" style="position:fixed;top:15px;right:20px;color:#fff;background:#8c2318;padding:8px 12px;border-radius:6px;z-index:99999;display:none;font-size:1rem;">
+                </div>
+                <button id="loginBtn" onclick="openLogin()" style="position:fixed;top:15px;right:20px;background:#8c2318;color:#fff;border:2px solid #fff;padding:8px 16px;border-radius:8px;z-index:99999;cursor:pointer;font-size:1rem;font-weight:bold;transition:all 0.3s ease;">
+                    登录/注册
+                </button>
+            `);
+            if(user){
+                $("#userInfo").html(`欢迎，${user} <span onclick="logout()" style="cursor:pointer;color:#fff;margin-left:8px;">退出</span>`).show();
+                $("#loginBtn").hide();
+            }else{
+                $("#userInfo").hide();
+                $("#loginBtn").show();
+            }
+        }
+
+        function logout(){
+            localStorage.removeItem('user');
+            updateUserStatus();
+            alert('已退出登录');
+            location.reload();
+        }
+// 打开详情页（type = 宫殿 / 园林 / 古塔...）
+// 打开详情页
+function openDetail(type) {
+  document.getElementById("detailFrame").src = `detail1.html?type=${type}`;
+  document.getElementById("detailModal").style.display = "flex";
+}
+// 关闭弹窗
+function closeModal() {
+  document.getElementById("detailModal").style.display = "none";
+  document.getElementById("detailFrame").src = "";
+}
+    </script>
+<!-- 全屏透明详情弹窗 -->
+<div class="detail-modal" id="detailModal" onclick="closeModal()">
+  <div class="projection-frame" onclick="event.stopPropagation()">
+    <!--<button class="close-btn" onclick="closeModal()">×</button>-->
+    <iframe id="detailFrame" src=""></iframe>
+	  </div>
+	</div>
+  </div>
+</div>
+</body>
+</html>

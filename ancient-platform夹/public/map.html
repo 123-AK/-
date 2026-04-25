@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古建地图 - 营造志·中华古建筑数字图鉴</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap');
+
+        :root {
+            --primary: #8C2318;
+            --bg: #F8F4E9;
+            --border: 2px solid #8C2318;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Noto Serif SC', serif;
+            color: #333;
+        }
+
+        .main-title {
+            width: 100%;
+            background-color: var(--primary);
+            color: #fff;
+            text-align: center;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            padding: 20px 0;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 4px;
+            font-family: 'Ma Shan Zheng', cursive;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-bar {
+                width: 100%;
+                padding: 16px 0;
+                background: rgba(255,255,255,0.9);
+                display: flex;
+                border-top: 2px solid var(--gold);
+                border-bottom: 2px solid var(--primary);
+                position: relative;
+            }
+            
+            .nav-bar a {
+                flex: 1;
+                color: var(--primary);
+                text-decoration: none;
+                font-family: 'Ma Shan Zheng',cursive;
+                text-align: center;
+                padding: 8px 30px; /* 给云纹留出空间 */
+                font-size: 18px;
+                letter-spacing: 2px;
+                position: relative;
+            }
+            
+            /* 选项 前面云纹 */
+            .nav-bar a::before {
+                content: "☁";
+                font-size: 16px;
+                color: var(--primary);
+                position: absolute;
+                left: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                opacity: 0.7;
+            }
+            
+            
+        /* 每个栏目之间 回纹分割线 */
+        .nav-bar a:not(:last-child)::after {
+            content: "┃";
+            color: var(--gold);
+            font-size: 20px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+            
+            .nav-bar a.active {
+                background: var(--primary);
+                color: white;
+            }
+            
+            .nav-bar a:hover {
+                color: #fff;
+                background-color: var(--primary);
+            }
+
+        #map {
+            width: 100%;
+            height: clamp(400px, 80vh, 680px);
+            border: var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin: 30px auto;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: var(--primary);
+            margin: 30px 0;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .filter-bar{
+            background:#fff;
+            padding:24px;
+            border-radius:12px;
+            border:2px solid var(--primary);
+            margin: 30px auto 40px;
+            max-width: 95%;
+        }
+        .filter-title{font-family:'Ma Shan Zheng',cursive;color:var(--primary);margin-bottom:20px;font-size:1.4rem;}
+        .filter-group{margin-bottom:20px;}
+        .filter-group:last-child{margin-bottom:0;}
+        .filter-btn{border:1px solid var(--primary);background:#fff;color:var(--primary);padding:8px 16px;border-radius:30px;margin:6px 8px 6px 0;cursor:pointer;transition:0.3s;font-size:0.95rem;}
+        .filter-btn.active,.filter-btn:hover{background:var(--primary);color:#fff;transform:scale(1.05);}
+
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .to-top{
+            position:fixed;
+            bottom:30px;
+            right:30px;
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            background:var(--primary);
+            color:white;
+            font-size:22px;
+            border:none;
+            cursor:pointer;
+            z-index:99;
+        }
+
+        @media (max-width: 768px) {
+            .nav-bar a {
+                font-size: clamp(1rem, 3vw, 18px);
+            }
+            #map {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-title {
+                font-size: clamp(2rem, 8vw, 3rem);
+                padding: 15px 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<h1 class="main-title">营造志·中华古建筑数字图鉴</h1>
+
+<div class="nav-bar">
+    <a href="index.html">首页</a>
+    <a href="list.html">古建筑总览</a>
+    <a href="map.html" class="active">地古建筑地图分布</a>
+    <a href="knowledge.html">趣味知识科普</a>
+    <a href="about.html">项目背景说明</a>
+</div>
+
+<div class="container">
+    <h2 class="page-title">中国古建筑分布地图</h2>
+</div>
+
+<div class="container">
+    <div class="filter-bar">
+        <div class="filter-group">
+            <h4 class="filter-title">按建筑类型筛选</h4>
+            <div>
+                <button class="filter-btn active" data-type="all">全部</button>
+                <button class="filter-btn" data-type="宫殿">宫殿建筑</button>
+                <button class="filter-btn" data-type="园林">园林建筑</button>
+                <button class="filter-btn" data-type="古塔">古塔建筑</button>
+                <button class="filter-btn" data-type="古桥">古桥建筑</button>
+                <button class="filter-btn" data-type="民居">民居建筑</button>
+                <button class="filter-btn" data-type="坛庙">坛庙建筑</button>
+                <button class="filter-btn" data-type="宗教">宗教建筑</button>
+                <button class="filter-btn" data-type="楼阁">楼阁建筑</button>
+                <button class="filter-btn" data-type="陵墓">陵墓建筑</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h4 class="filter-title">按建造年代筛选</h4>
+            <div>
+                <button class="filter-btn active" data-era="all">全部</button>
+                <button class="filter-btn" data-era="先秦">先秦</button>
+                <button class="filter-btn" data-era="汉">汉朝</button>
+                <button class="filter-btn" data-era="魏晋南北朝">魏晋南北朝</button>
+                <button class="filter-btn" data-era="隋唐">隋唐</button>
+                <button class="filter-btn" data-era="宋辽金">宋辽金</button>
+                <button class="filter-btn" data-era="元明清">元明清</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+</div>
+
+<button class="to-top" onclick="window.scrollTo(0,0)">↑</button>
+
+<div class="footer">
+    <p>© 2026 营造志·中华古建筑数字图鉴 | 传承古建筑文化，助力数字化保护</p>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=d257eb9df88c202581894a480006979e"></script>
+
+<script>
+    const eraGroup = {
+        "先秦": ["战国", "秦"],
+        "汉": ["汉", "东汉"],
+        "魏晋南北朝": ["北魏", "东晋", "南唐"],
+        "隋唐": ["隋", "唐"],
+        "宋辽金": ["宋", "南宋", "辽", "金"],
+        "元明清": ["明", "清", "明清", "元明清"]
+    };
+
+    let allData = [];
+    let filteredData = [];
+    let currentType = "all";
+    let currentEra = "all";
+    let currentPage = 1;
+
+    let map;
+    let markers = [];
+
+    $(function(){
+        initLogin();
+        initMap();
+        bindFilterEvents();
+    });
+
+    function initLogin(){
+        $.get("login-modal.html", function(html){
+            $("body").append(html);
+            updateUserStatus();
+        });
+    }
+
+    function initMap(){
+        const demoData = [
+            { id:1, name:"故宫", type:"宫殿", era:"明清", imageUrl:"gugong.jpg", lnglat:[116.397428, 39.90923], Intro:"明清皇家宫殿，世界现存最大木质古建筑" },
+            { id:2, name:"颐和园", type:"园林", era:"清", imageUrl:"yiheyuan.jpg", lnglat:[116.274985, 39.998235], Intro:"清代皇家园林" },
+            { id:3, name:"大雁塔", type:"古塔", era:"唐", imageUrl:"dajieta.jpg", lnglat:[108.954198, 34.223412], Intro:"唐代古塔" }
+        ];
+    
+        try {
+            map = new AMap.Map("map", {
+                zoom: 5,
+                center: [106.0, 35.0],
+                resizeEnable: true,
+                mapStyle: "amap://styles/traditional",
+                lang: 'zh_cn'
+            });
+    
+            addMarkers(demoData);
+    
+            $.get("/api/map", function(res) {
+                if (res.code === 200) {
+                    const archData = res.data.map(item => ({
+                        id: item.Id,
+                        name: item.Name,
+                        type: item.Type,
+                        era: item.Era,
+                        Intro: item.Intro, // ✅ 统一用 Intro
+                        imageUrl: item.ImageUrl,
+                        lnglat: [item.Longitude, item.Latitude]
+                    }));
+                    allData = archData;
+                    addMarkers(archData);
+                }
+            }).fail(() => {
+                allData = demoData;
+                console.log("使用演示数据");
+            });
+    
+        } catch (err) {
+            console.error("地图加载失败", err);
+        }
+    }
+
+    function bindFilterEvents(){
+        $('.filter-btn[data-type]').click(function(){
+            $('.filter-btn[data-type]').removeClass('active');
+            $(this).addClass('active');
+            currentType = $(this).data('type');
+            filterMap();
+        });
+
+        $('.filter-btn[data-era]').click(function(){
+            $('.filter-btn[data-era]').removeClass('active');
+            $(this).addClass('active');
+            currentEra = $(this).data('era');
+            filterMap();
+        });
+    }
+
+    function filterMap(){
+        if(!allData.length) return;
+        let filtered = allData.filter(item => {
+            let typeOk = currentType === 'all' || item.type === currentType;
+            let eraOk = true;
+            if(currentEra !== 'all'){
+                eraOk = eraGroup[currentEra].includes(item.era);
+            }
+            return typeOk && eraOk;
+        });
+        addMarkers(filtered);
+    }
+
+   function addMarkers(data) {
+       markers.forEach(m => m.remove());
+       markers = [];
+   
+       data.forEach(item => {
+           const marker = new AMap.Marker({
+               position: item.lnglat,
+               title: item.name
+           });
+   
+           marker.on("click", () => {
+               new AMap.InfoWindow({
+                   content: `
+                   <div style="width:280px; padding:10px; text-align:center;">
+                       <img src="/images/${item.imageUrl}" 
+                            style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+                       <h5 style="margin:0 0 5px 0;">${item.name}</h5>
+                       <p style="font-size:12px; color:#666; margin:0 0 10px 0;">${item.Intro || '暂无介绍'}</p>
+                       <a href="detail.html?id=${item.id}" class="btn btn-sm btn-danger w-100">查看详情</a>
+                   </div>
+                   `
+               }).open(map, item.lnglat);
+               map.setCenter(item.lnglat);
+               map.setZoom(10);
+           });
+   
+           marker.addTo(map);
+           markers.push(marker);
+       });
+   }
+    function updateUserStatus(){
+        const user = localStorage.getItem('user');
+        let userInfo = $('#userInfo');
+        let loginBtn = $('#loginBtn');
+
+        if(!userInfo.length){
+            $('body').append('<div id="userInfo" style="position:fixed;top:15px;right:20px;color:#fff;background:#8c2318;padding:8px 12px;border-radius:6px;z-index:99999;display:none;font-size:1rem;"></div>');
+            userInfo = $('#userInfo');
+        }
+        if(!loginBtn.length){
+            $('body').append('<button id="loginBtn" onclick="openLogin()" style="position:fixed;top:15px;right:20px;background:#8c2318;color:#fff;border:2px solid #fff;padding:8px 16px;border-radius:8px;z-index:99999;cursor:pointer;font-size:1rem;font-weight:bold;">登录/注册</button>');
+            loginBtn = $('#loginBtn');
+        }
+
+        if(user){
+            userInfo.html(`欢迎，${user} <span onclick="logout()" style="cursor:pointer;margin-left:10px;">退出</span>`).show();
+            loginBtn.hide();
+        }else{
+            userInfo.hide();
+            loginBtn.show();
+        }
+    }
+
+    function logout(){
+        localStorage.removeItem('user');
+        updateUserStatus();
+        alert('已退出登录');
+    }
+</script>
+</body>
+</html>

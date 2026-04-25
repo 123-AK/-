@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文化科普 - 营造志·中华古建筑数字图鉴</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap');
+        :root { --primary:#8C2318; --bg:#F8F4E9; --border:2px solid #8C2318; --shadow:0 4px 15px rgba(0,0,0,0.1); }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); font-family:'Noto Serif SC',serif; color:#333; }
+
+        /* 全站统一的顶部标题栏 */
+        .main-title {
+            width: 100%;
+            background-color: var(--primary);
+            color: #fff !important;
+            text-align: center;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            padding: 20px 0;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 4px;
+            font-family: 'Ma Shan Zheng', cursive;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 999;
+        }
+
+        /* 全站统一的导航栏 */
+        .nav-bar {
+                width: 100%;
+                padding: 16px 0;
+                background: rgba(255,255,255,0.9);
+                display: flex;
+                border-top: 2px solid var(--gold);
+                border-bottom: 2px solid var(--primary);
+                position: relative;
+            }
+            
+            .nav-bar a {
+                flex: 1;
+                color: var(--primary);
+                text-decoration: none;
+                font-family: 'Ma Shan Zheng',cursive;
+                text-align: center;
+                padding: 8px 30px; /* 给云纹留出空间 */
+                font-size: 18px;
+                letter-spacing: 2px;
+                position: relative;
+            }
+            
+            /* 选项 前面云纹 */
+            .nav-bar a::before {
+                content: "☁";
+                font-size: 16px;
+                color: var(--primary);
+                position: absolute;
+                left: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                opacity: 0.7;
+            }
+            
+            
+        /* 每个栏目之间 回纹分割线 */
+        .nav-bar a:not(:last-child)::after {
+            content: "┃";
+            color: var(--gold);
+            font-size: 20px;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+            
+            .nav-bar a.active {
+                background: var(--primary);
+                color: white;
+            }
+            
+            .nav-bar a:hover {
+                color: #fff;
+                background-color: var(--primary);
+            }
+
+        /* 全站统一的内容容器 */
+        .knowledge-box {
+            background: #fff;
+            border: var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin: 30px auto;
+            max-width: 900px;
+            line-height: 1.9;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow);
+        }
+        .knowledge-box h2 {
+            color: var(--primary);
+            font-family: 'Ma Shan Zheng', cursive;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+        }
+        .intro-text {
+            text-align: justify;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        /* 全站统一的页脚 */
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        /* 登录按钮容器 */
+        #userBtnContainer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .game-card {
+                width: 90%;
+                max-width: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="userBtnContainer"></div>
+
+<!-- 全站统一的顶部标题栏 -->
+<h1 class="main-title">营造志·中华古建筑数字图鉴</h1>
+
+<!-- 全站统一的导航栏（文化科普高亮） -->
+<div class="nav-bar">
+    <a href="index.html">首页</a>
+    <a href="list.html">古建筑总览</a>
+    <a href="map.html">古建筑地图分布</a>
+    <a href="knowledge.html"class="active" >趣味知识科普</a>
+    <a href="about.html">项目背景说明</a>
+</div>
+
+<!-- 主体内容：优化边框与视觉效果 -->
+<style>
+    .culture-wrap {
+        position: relative;
+        background: url('images/科普.png') center center / cover no-repeat;
+        min-height: 100vh;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        padding: 40px 20px;
+    }
+
+    .culture-wrap::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(248, 244, 233, 0.65);
+        z-index: -1;
+    }
+
+    .culture-content {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .culture-hero {
+        text-align: center;
+        padding: 30px 20px;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    .culture-hero::before, .culture-hero::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 20px;
+        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M0,10 Q25,0 50,10 T100,10" stroke="%238C2318" fill="none" stroke-width="2"/></svg>') center / contain no-repeat;
+        opacity: 0.7;
+    }
+    .culture-hero::before {
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .culture-hero::after {
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .culture-hero h2 {
+        font-family: 'Ma Shan Zheng', cursive;
+        font-size: 36px;
+        letter-spacing: 6px;
+        color: #8C2318;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        position: relative;
+        display: inline-block;
+        padding: 0 20px;
+    }
+    .culture-hero .subtitle {
+        font-size: 18px;
+        line-height: 1.8;
+        color: #555;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 12px 30px;
+        border-radius: 30px;
+        display: inline-block;
+        border: 1px solid rgba(140, 35, 24, 0.2);
+        box-shadow: 0 2px 8px rgba(140, 35, 24, 0.1);
+    }
+
+    .game-cards {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+
+    .game-card {
+        width: 260px;
+        padding: 35px 25px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        border: 3px solid transparent;
+        background-clip: padding-box, border-box;
+        background-origin: padding-box, border-box;
+        background-image: 
+            linear-gradient(145deg, #fff, #fffbf8),
+            linear-gradient(to bottom right, #8C2318, #E8B1B1, #8C2318);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(140, 35, 24, 0.15);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .game-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+        transform: rotate(30deg);
+        transition: all 0.5s ease;
+        opacity: 0;
+    }
+    .game-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(140, 35, 24, 0.25);
+    }
+    .game-card:hover::before {
+        opacity: 1;
+        transform: rotate(30deg) translate(10%, 10%);
+    }
+
+    .card-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 2px 4px rgba(140, 35, 24, 0.2));
+    }
+    .game-card h3 {
+        font-family: 'Ma Shan Zheng', cursive;
+        color: #8C2318;
+        font-size: 22px;
+        margin-bottom: 12px;
+        letter-spacing: 2px;
+    }
+    .game-card p {
+        color: #555;
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 25px;
+    }
+
+    .game-btn {
+        background: linear-gradient(145deg, #8C2318, #A63C2C);
+        color: #fff;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-family: 'Noto Serif SC', serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(140, 35, 24, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .game-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: all 0.5s ease;
+    }
+    .game-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(140, 35, 24, 0.4);
+    }
+    .game-btn:hover::before {
+        left: 100%;
+    }
+
+    .culture-intro {
+        padding: 30px 40px;
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,248,245,0.9));
+        border-radius: 20px;
+        border: 2px solid transparent;
+        background-clip: padding-box, border-box;
+        background-origin: padding-box, border-box;
+        background-image: 
+            linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,248,245,0.9)),
+            linear-gradient(to right, #8C2318, #E8B1B1, #8C2318);
+        box-shadow: 0 8px 25px rgba(140, 35, 24, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+    .culture-intro::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10,50 Q25,30 50,50 T90,50" stroke="%238C2318" fill="none" stroke-width="1" opacity="0.1"/></svg>') repeat;
+        pointer-events: none;
+    }
+    .culture-intro p {
+        line-height: 1.9;
+        color: #444;
+        font-size: 17px;
+        position: relative;
+        z-index: 2;
+    }
+
+    @media (max-width: 768px) {
+        .game-cards {
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-card {
+            width: 90%;
+            max-width: 350px;
+        }
+        .culture-hero h2 {
+            font-size: 28px;
+        }
+    }
+</style>
+
+<div class="culture-wrap">
+    <div class="culture-content">
+        <div class="culture-hero">
+            <h2>营造之志 · 古建华夏</h2>
+            <div class="subtitle">承千年营造之法，传华夏建筑文脉，在探索与互动中读懂中国古建筑之美</div>
+        </div>
+
+        <div class="game-cards">
+            <div class="game-card card-run">
+                <div class="card-icon">🐉</div>
+                <h3>脊兽跑酷</h3>
+                <p>化身殿宇脊兽，穿梭檐角之间，在趣味跑酷中巩固古建知识，边玩边学。</p>
+                <button class="game-btn" onclick="window.open('game-run.html','_self')">开始挑战</button>
+            </div>
+
+            <div class="game-card card-lie">
+                <div class="card-icon">📜</div>
+                <h3>古建辨伪</h3>
+                <p>辨析古建知识真伪，分辨营造常识误区，在推理中加深对传统建筑的理解。</p>
+                <button class="game-btn" onclick="window.open('game-lie.html','_self')">开始辨伪</button>
+            </div>
+
+            <div class="game-card card-library">
+                <div class="card-icon">🏯</div>
+                <h3>古建知识库</h3>
+                <p>系统学习榫卯、斗拱、屋顶形制、地域流派、营造典籍等专业知识。</p>
+                <button class="game-btn" onclick="window.open('final-knowledge.html','_self')">进入知识库</button>
+            </div>
+        </div>
+
+        <div class="culture-intro">
+            <p>
+                中国古建筑是中华文脉的重要载体，从宫殿坛庙到园林民居，从木构技艺到礼制象征，
+                无不蕴含着古人的自然观、审美观与营造智慧。榫卯咬合、斗拱层叠、飞檐翘角，
+                不仅是结构之巧，更是文化之魂。本板块以互动游戏与知识科普相结合，
+                带你走近千年古建，感受中式营造的独特魅力，传承中华优秀传统建筑文化。
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- 全站统一的页脚 -->
+<div class="footer">© 2026 营造志·中华古建筑数字图鉴 | 传承古建筑文化，助力数字化保护</div>
+
+<!-- 登录状态管理 -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+$(function(){
+    if(!$("#loginModal").length){
+        $.get("login-modal.html", function(html){
+            $("body").append(html);
+            updateUserStatus();
+        });
+    }else{
+        updateUserStatus();
+    }
+});
+
+function updateUserStatus(){
+    const user = localStorage.getItem('user');
+    $("#userInfo, #loginBtn").remove();
+    $("body").append(`
+        <div id="userInfo" style="position:fixed;top:15px;right:20px;color:#fff;background:#8c2318;padding:8px 12px;border-radius:6px;z-index:99999;display:none;font-size:1rem;">
+        </div>
+        <button id="loginBtn" onclick="openLogin()" style="position:fixed;top:15px;right:20px;background:#8c2318;color:#fff;border:2px solid #fff;padding:8px 16px;border-radius:8px;z-index:99999;cursor:pointer;font-size:1rem;font-weight:bold;transition:all 0.3s ease;">
+            登录/注册
+        </button>
+    `);
+    if(user){
+        $("#userInfo").html(`欢迎，${user} <span onclick="logout()" style="cursor:pointer;color:#fff;margin-left:8px;">退出</span>`).show();
+        $("#loginBtn").hide();
+    }else{
+        $("#userInfo").hide();
+        $("#loginBtn").show();
+    }
+}
+
+function logout(){
+    localStorage.removeItem('user');
+    updateUserStatus();
+    alert('已退出登录');
+    location.reload();
+}
+</script>
+</body>
+</html>

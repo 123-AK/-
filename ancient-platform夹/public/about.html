@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于本站 - 营造志·中华古建筑数字图鉴</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap');
+        :root { --primary:#8C2318; --bg:#F8F4E9; --border: 2px solid #8C2318;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--bg);font-family:'Noto Serif SC',serif;}
+        .main-title{width:100%;background:var(--primary);color:#fff;text-align:center;font-size:clamp(2.5rem,6vw,4rem);padding:20px 0;font-family:'Ma Shan Zheng',cursive;letter-spacing:3px;}
+        .nav-bar {
+            width: 100%;
+            padding: 16px 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            border-top: 2px solid var(--gold);
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+        }
+        
+        .nav-bar a {
+            flex: 1;
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'Ma Shan Zheng',cursive;
+            text-align: center;
+            padding: 8px 30px; /* 给云纹留出空间 */
+            font-size: 18px;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        
+        /* 选项 前面云纹 */
+        .nav-bar a::before {
+            content: "☁";
+            font-size: 16px;
+            color: var(--primary);
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.7;
+        }
+        
+        
+    /* 每个栏目之间 回纹分割线 */
+    .nav-bar a:not(:last-child)::after {
+        content: "┃";
+        color: var(--gold);
+        font-size: 20px;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+        
+        .nav-bar a.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-bar a:hover {
+            color: #fff;
+            background-color: var(--primary);
+        }
+
+        /* 内容容器 */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        /* 关于本站卡片 */
+        .about-box {
+            background: #fff;
+            border: var(--border);
+            border-radius: 12px;
+            padding: 40px 50px;
+            font-size: 1.1rem;
+            line-height: 2;
+            box-shadow: var(--shadow);
+        }
+
+        .about-box h2 {
+            text-align: center;
+            color: var(--primary);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--primary);
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            margin: 25px 0 10px;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            background: rgba(140, 35, 24, 0.05);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .footer {
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        /* 右上角登录按钮统一规格 */
+        #loginBtn, #userInfo {
+            position: fixed !important;
+            top: 22px !important;
+            right: 24px !important;
+            z-index: 99999 !important;
+            font-family: 'Noto Serif SC', serif !important;
+        }
+
+        @media (max-width: 768px) {
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+            .about-box {
+                padding: 25px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1 class="main-title">营造志·中华古建筑数字图鉴</h1>
+<div class="nav-bar">
+    <a href="index.html"><span>首页</span></a>
+    <a href="list.html"><span>古建筑总览</span></a>
+    <a href="map.html"><span>古建筑地图分布</span></a>
+    <a href="knowledge.html"><span>趣味知识科普</span></a>
+    <a href="about.html"class="active" ><span>项目背景说明</span></a>
+
+</div>
+
+<div class="container">
+    <div class="about-box">
+        <h2>关于本站</h2>
+
+        <p class="section-title">📜 项目缘起</p>
+        <p>中国古建筑是中华文明的立体史诗，一榫一卯承载千年匠艺，一砖一瓦镌刻时代风华。从紫禁城的恢弘规制，到苏州园林的咫尺山林，从应县木塔的千年屹立，到福建土楼的聚族而居，古建不仅是居住与祭祀的空间，更是中国哲学、礼制、美学与工艺的集大成者。</p>
+        <p>「营造志·中华古建筑数字图鉴」以<span class="highlight">宋代李诫《营造法式》</span>为精神内核，以数字化技术为载体，打造一个集展示、科普、交互于一体的古建文化平台，让千年古建走出史书、走进屏幕，让更多人读懂中国古建的美与智慧。</p>
+
+        <p class="section-title">🎯 创作初心</p>
+        <p>我们希望打破古建文化的专业壁垒，用通俗易懂的方式、沉浸式的交互体验，让普通大众也能看懂古建、爱上古建：</p>
+        <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li>让古建筑文化不再是博物馆里的冰冷展品，而是可触摸、可感知、可学习的鲜活内容</li>
+            <li>用数字化手段保护濒危古建，留存中华文脉的物质载体</li>
+            <li>传承营造技艺，让千年匠艺在新时代焕发新生</li>
+            <li>搭建古建文化传播桥梁，向世界展示中国传统建筑的独特魅力</li>
+        </ul>
+
+        <p class="section-title">🏛️ 网站核心内容</p>
+        <div class="feature-list">
+            <div class="feature-item">
+                <strong>九大类古建筑全景图鉴</strong>
+                <p>涵盖宫殿、园林、古塔、古桥、民居、坛庙、宗教、楼阁、陵墓9大类别，收录77座经典古建，每座建筑都有详实的历史背景、建筑特色与文化解读。</p>
+            </div>
+            <div class="feature-item">
+                <strong>全国古建筑分布地图</strong>
+                <p>以交互式地图为载体，直观呈现中国古建的地域分布，点击即可查看建筑详情，实现「足不出户，遍览天下名建」。</p>
+            </div>
+            <div class="feature-item">
+                <strong>古建知识库科普</strong>
+                <p>系统讲解斗拱、榫卯、屋顶、彩画等古建核心知识，拆解建筑结构与营造智慧，让你从「看个热闹」到「看懂门道」。</p>
+            </div>
+            <div class="feature-item">
+                <strong>趣味互动小游戏</strong>
+                <p>包含两款古建主题互动游戏，在娱乐中加深对古建文化的理解，让学习过程更加生动有趣。</p>
+            </div>
+            <div class="feature-item">
+                <strong>图文详情展示</strong>
+                <p>每座古建均配备高清图片与详细介绍，清晰展示建筑外观、结构与文化价值，带来沉浸式浏览体验。</p>
+            </div>
+            <div class="feature-item">
+                <strong>多维度分类检索</strong>
+                <p>按建筑类型、朝代、地域等多维度筛选，快速找到你感兴趣的古建内容，满足不同学习与浏览需求。</p>
+            </div>
+        </div>
+
+        <p class="section-title">🎨 设计理念</p>
+        <p>网站整体设计深度融合中式美学与现代交互：</p>
+        <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li>以<span class="highlight">朱砂红、宣纸白、墨黑</span>为核心配色，还原传统书画的国风质感</li>
+            <li>选用毛笔书法字体（马善政字体），营造古雅庄重的氛围</li>
+            <li>以《营造法式》为设计灵感，界面布局遵循传统礼制，对称规整</li>
+            <li>用现代交互技术优化体验，让传统文化适配数字时代的阅读习惯</li>
+        </ul>
+
+        <p class="section-title">🙏 致谢与展望</p>
+        <p>本项目的完成，离不开中国古建筑研究领域的学术成果、历代营造匠人的智慧传承，以及所有热爱古建文化的朋友们的支持。</p>
+        <p>未来，我们将持续丰富古建数据库、优化交互体验、拓展科普内容，打造一个更全面、更专业、更有趣的古建文化平台，让千年营造智慧，照亮当代文化传承之路。</p>
+
+        <p style="text-align:center; margin-top:30px; font-weight:bold; color:var(--primary); font-size:1.2rem;">
+            传承营造技艺，守护中华文脉<br>
+            让古建之美，被更多人看见
+        </p>
+    </div>
+</div>
+
+<div class="footer">
+    <p>© 2026 营造志·中华古建筑数字图鉴 | 传承古建文化，守护中华文脉</p>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(function(){
+    if(!$("#loginModal").length){
+        $.get("login-modal.html", function(html){
+            $('body').append(html);
+            updateUserStatus();
+        });
+    }else{
+        updateUserStatus();
+    }
+});
+
+function updateUserStatus(){
+    const user = localStorage.getItem('user');
+    $("#userInfo, #loginBtn").remove();
+
+    $("body").append(`
+        <div id="userInfo" style="position:fixed;top:22px;right:24px;color:#fff;background:#8c2318;padding:8px 12px;border-radius:6px;z-index:99999;display:none;font-size:1rem;"></div>
+        <button id="loginBtn" onclick="openLogin()" style="position:fixed;top:22px;right:24px;background:#8c2318;color:#fff;border:2px solid #fff;padding:8px 16px;border-radius:8px;z-index:99999;cursor:pointer;font-size:1rem;font-weight:bold;transition:all 0.3s ease;">登录/注册</button>
+    `);
+
+    if(user){
+        $("#userInfo").html(`欢迎，${user} <span onclick="logout()" style="cursor:pointer;color:#fff;margin-left:8px;">退出</span>`).show();
+        $("#loginBtn").hide();
+    }else{
+        $("#userInfo").hide();
+        $("#loginBtn").show();
+    }
+}
+
+function logout(){
+    localStorage.removeItem('user');
+    updateUserStatus();
+    alert('已退出登录');
+    location.reload();
+}
+</script>
+
+</body>
+</html>

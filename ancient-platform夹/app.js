@@ -92,3 +92,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log('✅ 服务启动成功');
 });
+// ↓↓↓ 必须加这一句！部署必备！↓↓↓
+module.exports = app;

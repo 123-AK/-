@@ -88,9 +88,7 @@ app.post('/api/reset-pwd', (req, res) => {
 });
 
 // ==================== 启动服务 ====================
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log('✅ 服务启动成功');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('运行成功');
 });
-// ↓↓↓ 必须加这一句！部署必备！↓↓↓
-module.exports = app;

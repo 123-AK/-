@@ -7,7 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+// 关键：把 public 目录设为静态文件根目录
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ==================== JSON 文件路径 ====================
 const usersPath = path.join(__dirname, 'data', 'users.json');

@@ -31,11 +31,11 @@
       cursor: pointer;
     }
 
-    /* 首页 用你原本图片 */
+    /* 首页 - 适配暖黄国风背景 */
     .home {
       position: fixed;
       inset: 0;
-      background: url("/images/游戏2.png") center/cover no-repeat;
+      background: url(images/游戏2.png) center/cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,12 +83,12 @@
       box-shadow: 0 10px 20px rgba(255, 182, 193, 0.4);
     }
 
-    /* 游戏界面 你原图 */
+    /* 游戏界面 - 适配暖黄背景 */
     .game {
       display: none;
       width: 100%;
       min-height: 100vh;
-      background: url("/images/推理.png") center/cover fixed no-repeat;
+      background: url(images/推理.png) center/cover fixed no-repeat;
       padding: 30px 20px;
       display: flex;
       flex-direction: column;
@@ -107,6 +107,7 @@
       margin-bottom: 20px;
     }
 
+    /* 三人物 + 火焰 */
     .roles {
       display: flex;
       gap: 40px;
@@ -136,6 +137,7 @@
       text-shadow: 0 0 3px #fff;
     }
 
+    /* 题目面板 - 暖调适配 */
     .question-box {
       background: rgba(255, 245, 230, 0.95);
       border-radius: 20px;
@@ -181,10 +183,11 @@
       line-height: 1.5;
     }
 
+    /* 结果页 - 暖调适配 */
     .result {
       position: fixed;
       inset: 0;
-      background: url("/images/推理.png") center/cover fixed no-repeat;
+      background: url(images/推理.png) center/cover fixed no-repeat;
       display: none;
       align-items: center;
       justify-content: center;
@@ -246,19 +249,27 @@
 
 <body>
 
+<!-- 🔥 静音按钮 -->
 <button id="soundBtn">🔊</button>
 
+<!-- 音频标签（和跑酷完全一样） -->
 <audio id="bgmIntro" loop>
-  <source src="/audio/bg1.mp3" type="audio/mpeg">
+  <source src="audio/背景2.mp3" type="audio/mpeg">
+</audio>
 <audio id="bgmGame" loop>
-  <source src="/audio/bg2.mp3" type="audio/mpeg">
+  <source src="audio/背景2.mp3" type="audio/mpeg">
+</audio>
 <audio id="clickSound">
-  <source src="/audio/click.mp3" type="audio/mpeg">
+  <source src="audio/点击.mp3" type="audio/mpeg">
+</audio>
 <audio id="winSound">
-  <source src="/audio/success.mp3" type="audio/mpeg">
+  <source src="audio/成功1.mp3" type="audio/mpeg">
+</audio>
 <audio id="loseSound">
-  <source src="/audio/fail.mp3" type="audio/mpeg">
+  <source src="audio/失败1.mp3" type="audio/mpeg">
+</audio>
 
+<!-- 首页 -->
 <div class="home" id="home">
   <div class="panel">
     <h1>🕵️‍♂️ 谁在说谎</h1>
@@ -272,6 +283,7 @@
   </div>
 </div>
 
+<!-- 游戏界面 -->
 <div class="game" id="game">
   <div class="game-header">
     <div>古建筑判官</div>
@@ -280,15 +292,15 @@
 
   <div class="roles">
     <div class="role">
-      <img src="/images/人物3.png" alt="甲">
+      <img src="images/人物3.png" alt="甲">
       <div class="fire" id="fA"></div>
     </div>
     <div class="role">
-      <img src="/images/人物1.png" alt="乙">
+      <img src="images/人物1.png" alt="乙">
       <div class="fire" id="fB"></div>
     </div>
     <div class="role">
-      <img src="/images/人物2.png" alt="丙">
+      <img src="images/人物2.png" alt="丙">
       <div class="fire" id="fC"></div>
     </div>
   </div>
@@ -297,20 +309,21 @@
     <div class="scene" id="scene"></div>
 
     <div class="choice" onclick="choose('A')">
-      <img src="/images/人物3.png" alt="甲">
+      <img src="images/人物3.png" alt="甲">
       <div class="choice-text" id="txtA"></div>
     </div>
     <div class="choice" onclick="choose('B')">
-      <img src="/images/人物1.png" alt="乙">
+      <img src="images/人物1.png" alt="乙">
       <div class="choice-text" id="txtB"></div>
     </div>
     <div class="choice" onclick="choose('C')">
-      <img src="/images/人物2.png" alt="丙">
+      <img src="images/人物2.png" alt="丙">
       <div class="choice-text" id="txtC"></div>
     </div>
   </div>
 </div>
 
+<!-- 结果页 -->
 <div class="result" id="result">
   <div class="res-panel">
     <h2>📊 判案结果</h2>
@@ -337,6 +350,7 @@
   const fC = document.getElementById('fC');
   const info = document.getElementById('info');
 
+  // ===================== 音频 =====================
   const bgmIntro = document.getElementById('bgmIntro');
   const bgmGame = document.getElementById('bgmGame');
   const clickSound = document.getElementById('clickSound');
@@ -349,6 +363,7 @@
   winSound.volume = 0.7;
   loseSound.volume = 0.7;
 
+  // 页面加载播放背景音乐
   window.addEventListener('load', () => {
     let playPromise = bgmIntro.play();
     if (playPromise !== undefined) {
@@ -360,6 +375,7 @@
     }
   });
 
+  // 静音按钮
   let isMuted = false;
   const soundBtn = document.getElementById('soundBtn');
   soundBtn.onclick = () => {
@@ -378,7 +394,7 @@ clickSound.muted = true;
 winSound.muted = true;
 loseSound.muted = true;
 soundBtn.innerHTML = '🔇';
-
+  // ===================== 游戏逻辑 =====================
   const levels = [
     [
       {
@@ -445,6 +461,7 @@ soundBtn.innerHTML = '🔇';
   let qList, idx, fire, userAns, realAns;
 
   function start() {
+    // 切换音乐
     bgmIntro.pause();
     bgmIntro.currentTime = 0;
     bgmGame.currentTime = 0;
@@ -474,8 +491,10 @@ soundBtn.innerHTML = '🔇';
   }
 
   function choose(p) {
+    // 点击音效
     clickSound.currentTime = 0;
     clickSound.play().catch(err => {});
+
     userAns.push(p);
     fire[p]++;
     idx++;
@@ -489,6 +508,8 @@ soundBtn.innerHTML = '🔇';
   function showResult() {
     game.style.display = "none";
     result.classList.add("show");
+
+    // 结果音效
     bgmGame.pause();
     let corr = 0;
     realAns.forEach((x, i) => { if (userAns[i] === x) corr++; });
@@ -500,6 +521,7 @@ soundBtn.innerHTML = '🔇';
 
     let realCnt = {A:0, B:0, C:0};
     realAns.forEach(x => realCnt[x]++);
+
     let uMax = Math.max(fire.A, fire.B, fire.C);
     let uKing = Object.keys(fire).find(k => fire[k] === uMax);
     let rMax = Math.max(realCnt.A, realCnt.B, realCnt.C);
@@ -508,6 +530,7 @@ soundBtn.innerHTML = '🔇';
     let judge = corr >= 3 ?
       '<span class="correct">✅ 你断案精准，适合担任古建筑判官！</span>' :
       '<span class="wrong">❌ 你判断失误较多，不适合担任判官。</span>';
+
     let ignor = uKing === rKing ?
       '<span class="correct">✅ 你准确识别了真正的说谎之王。</span>' :
       '<span class="wrong">⚠ 你被判定为：乱判官</span>';
@@ -528,10 +551,12 @@ soundBtn.innerHTML = '🔇';
   }
 
   function goHome() {
+    // 回到首页恢复音乐
     bgmGame.pause();
     bgmGame.currentTime = 0;
     bgmIntro.currentTime = 0;
     bgmIntro.play().catch(err => {});
+
     result.classList.remove("show");
     game.style.display = "none";
     home.style.display = "flex";
